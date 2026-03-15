@@ -3,13 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Créateur de Bindrunes — mode guidé + Google Sheets</title>
+  <title>Créateur de Bindrunes — Atelier ésotérique</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
   <style>
     :root {
       --bg: #0d0b09;
-      --bg-2: #15110d;
-      --panel: rgba(22, 17, 13, 0.94);
+      --panel: rgba(22, 17, 13, 0.96);
       --panel-2: #211912;
       --panel-3: #2d2218;
       --text: #f4ead8;
@@ -18,10 +17,8 @@
       --accent-2: #e5c98f;
       --border: #4a3927;
       --border-soft: #6a5338;
-      --ok: #8dc98d;
       --paper: #efe2c7;
       --paper-2: #e2d1af;
-      --ink: #20160d;
       --shadow: 0 14px 38px rgba(0,0,0,.34);
     }
 
@@ -46,36 +43,36 @@
 
     h1 {
       margin: 0 0 8px;
-      font-size: 2.15rem;
+      font-size: 2.1rem;
       color: var(--accent-2);
-      font-weight: 700;
-      letter-spacing: .03em;
       text-shadow: 0 0 14px rgba(201,163,95,.12);
     }
 
     .lead {
       margin: 0 0 24px;
       color: var(--muted);
-      max-width: 920px;
+      max-width: 900px;
       line-height: 1.65;
-      font-size: 1rem;
     }
 
     .layout {
       display: grid;
-      grid-template-columns: 380px minmax(380px, 1fr) 360px;
-      gap: 20px;
+      grid-template-columns: 340px minmax(380px, 1fr) 320px;
+      gap: 18px;
       align-items: start;
+    }
+
+    .stack {
+      display: grid;
+      gap: 14px;
     }
 
     .panel {
       position: relative;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,.015), rgba(0,0,0,.06)),
-        var(--panel);
+      background: linear-gradient(180deg, rgba(255,255,255,.015), rgba(0,0,0,.06)), var(--panel);
       border: 1px solid var(--border);
       border-radius: 20px;
-      padding: 18px;
+      padding: 16px;
       box-shadow: var(--shadow);
       overflow: hidden;
     }
@@ -89,28 +86,12 @@
       pointer-events: none;
     }
 
-    .panel::after {
-      content: "✦";
-      position: absolute;
-      right: 14px;
-      top: 10px;
-      font-size: .9rem;
-      color: rgba(201,163,95,.38);
-      pointer-events: none;
-    }
-
     .panel h2 {
-      margin: 0 0 14px;
-      font-size: 1.02rem;
+      margin: 0 0 12px;
+      font-size: 1rem;
       color: var(--accent-2);
       letter-spacing: .05em;
       text-transform: uppercase;
-      font-weight: 700;
-    }
-
-    .stack {
-      display: grid;
-      gap: 14px;
     }
 
     .field {
@@ -118,27 +99,21 @@
       gap: 6px;
     }
 
-    .field-inline {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
     label {
-      font-size: .88rem;
+      font-size: .84rem;
       color: var(--muted);
       letter-spacing: .04em;
       text-transform: uppercase;
     }
 
-    select, button, input, textarea {
+    select, button {
       width: 100%;
       border: 1px solid var(--border);
       background: linear-gradient(180deg, #261d15, #1d1611);
       color: var(--text);
       border-radius: 12px;
-      padding: 10px 12px;
-      font-size: .95rem;
+      padding: 8px 10px;
+      font-size: .9rem;
       font-family: inherit;
       box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
     }
@@ -152,14 +127,8 @@
         linear-gradient(45deg, transparent 50%, var(--accent-2) 50%),
         linear-gradient(135deg, var(--accent-2) 50%, transparent 50%);
       background-repeat: no-repeat;
-      background-position:
-        0 0,
-        calc(100% - 18px) 50%,
-        calc(100% - 12px) 50%;
-      background-size:
-        100% 100%,
-        6px 6px,
-        6px 6px;
+      background-position: 0 0, calc(100% - 18px) 50%, calc(100% - 12px) 50%;
+      background-size: 100% 100%, 6px 6px, 6px 6px;
       padding-right: 34px;
     }
 
@@ -169,29 +138,20 @@
       color: #f4ead8;
     }
 
-    select:focus,
-    input:focus,
-    textarea:focus {
+    select:focus, button:focus {
       outline: none;
       border-color: var(--accent);
       box-shadow: 0 0 0 2px rgba(201,163,95,.18), inset 0 1px 0 rgba(255,255,255,.03);
     }
 
-    textarea {
-      min-height: 92px;
-      resize: vertical;
-      font-family: inherit;
-    }
-
     button {
       cursor: pointer;
-      transition: .18s ease;
+      transition: .16s ease;
     }
 
     button:hover {
       border-color: var(--accent);
       transform: translateY(-1px);
-      box-shadow: 0 0 0 1px rgba(201,163,95,.14), 0 6px 18px rgba(0,0,0,.22);
     }
 
     .btn-accent {
@@ -209,13 +169,58 @@
     .btn-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      gap: 8px;
     }
 
     .btn-row-3 {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
+      gap: 8px;
+    }
+
+    .slots {
+      display: grid;
+      gap: 8px;
+    }
+
+    .slot-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .slot-tag {
+      font-size: .7rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      min-width: 46px;
+      text-align: right;
+    }
+
+    .subtle {
+      color: var(--muted);
+      font-size: .9rem;
+      line-height: 1.55;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      background: linear-gradient(180deg, #2a2017, #1f1812);
+      color: var(--accent-2);
+      font-size: .82rem;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(201,163,95,.45), transparent);
+      margin: 4px 0;
     }
 
     .canvas-wrap {
@@ -225,14 +230,12 @@
 
     .canvas-box {
       position: relative;
-      background:
-        radial-gradient(circle at top, rgba(255,255,255,.12), transparent 30%),
-        linear-gradient(180deg, var(--paper), var(--paper-2));
+      background: radial-gradient(circle at top, rgba(255,255,255,.12), transparent 30%), linear-gradient(180deg, var(--paper), var(--paper-2));
       border-radius: 20px;
       border: 2px solid var(--border);
       overflow: hidden;
       aspect-ratio: 1/1;
-      min-height: 420px;
+      min-height: 430px;
       box-shadow: inset 0 0 40px rgba(84,58,26,.08);
     }
 
@@ -262,25 +265,58 @@
       height: 100%;
     }
 
-    .subtle {
-      color: var(--muted);
-      font-size: .92rem;
-      line-height: 1.55;
+    .suggestions {
+      display: grid;
+      gap: 10px;
     }
 
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 11px;
-      border-radius: 999px;
+    .rune-card {
+      display: grid;
+      grid-template-columns: 52px 1fr auto;
+      gap: 10px;
+      align-items: start;
+      padding: 10px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,.015), rgba(0,0,0,.04)), rgba(34,26,20,.88);
+    }
+
+    .rune-glyph {
+      display: grid;
+      place-items: center;
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
       border: 1px solid var(--border-soft);
-      background: linear-gradient(180deg, #2a2017, #1f1812);
+      background: radial-gradient(circle at top, #34271b, #1b140f 70%);
       color: var(--accent-2);
+      font-size: 1.75rem;
+      line-height: 1;
+    }
+
+    .rune-card h3 {
+      margin: 0 0 4px;
+      font-size: .98rem;
+      color: var(--text);
+    }
+
+    .rune-meta {
       font-size: .82rem;
-      margin-right: 6px;
+      color: var(--muted);
       margin-bottom: 6px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
+      font-style: italic;
+    }
+
+    .rune-desc {
+      font-size: .88rem;
+      line-height: 1.45;
+      color: var(--text);
+    }
+
+    .rune-actions {
+      display: grid;
+      gap: 6px;
+      width: 84px;
     }
 
     .kbd {
@@ -293,122 +329,6 @@
       font-size: .82rem;
     }
 
-    .selectors {
-      display: grid;
-      gap: 10px;
-    }
-
-    .slots {
-      display: grid;
-      gap: 10px;
-    }
-
-    .slot-row {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .slot-tag {
-      font-size: .78rem;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: .06em;
-    }
-
-    .suggestions {
-      display: grid;
-      gap: 12px;
-    }
-
-    .rune-card {
-      display: grid;
-      grid-template-columns: 56px 1fr auto;
-      gap: 12px;
-      align-items: start;
-      padding: 12px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      background:
-        linear-gradient(180deg, rgba(255,255,255,.015), rgba(0,0,0,.04)),
-        rgba(34,26,20,.88);
-    }
-
-    .rune-glyph {
-      display: grid;
-      place-items: center;
-      width: 56px;
-      height: 56px;
-      border-radius: 12px;
-      border: 1px solid var(--border-soft);
-      background: radial-gradient(circle at top, #34271b, #1b140f 70%);
-      color: var(--accent-2);
-      font-size: 1.9rem;
-      line-height: 1;
-      box-shadow: inset 0 0 16px rgba(255,255,255,.02);
-    }
-
-    .rune-card h3 {
-      margin: 0 0 4px;
-      font-size: 1rem;
-      color: var(--text);
-      letter-spacing: .03em;
-    }
-
-    .rune-meta {
-      font-size: .84rem;
-      color: var(--muted);
-      margin-bottom: 6px;
-      font-style: italic;
-    }
-
-    .rune-desc {
-      font-size: .9rem;
-      line-height: 1.45;
-      color: var(--text);
-    }
-
-    .rune-actions {
-      display: grid;
-      gap: 8px;
-      width: 96px;
-    }
-
-    .empty {
-      border: 1px dashed var(--border-soft);
-      border-radius: 14px;
-      padding: 14px;
-      color: var(--muted);
-      text-align: center;
-      background: rgba(34,26,20,.45);
-    }
-
-    .sheet-preview {
-      padding: 12px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      background: linear-gradient(180deg, #1d1611, #17120e);
-      font-size: .86rem;
-      line-height: 1.5;
-      color: var(--text);
-      white-space: pre-wrap;
-      word-break: break-word;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.02);
-    }
-
-    .success {
-      color: var(--ok);
-      font-size: .86rem;
-      min-height: 18px;
-    }
-
-    .divider {
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(201,163,95,.45), transparent);
-      margin: 4px 0;
-    }
-
     @media (max-width: 1180px) {
       .layout { grid-template-columns: 1fr; }
       .canvas-box { min-height: 360px; }
@@ -419,8 +339,7 @@
   <div class="wrap">
     <h1>Créateur de Bindrunes — Atelier ésotérique</h1>
     <p class="lead">
-      Cette version mélange l’atelier de composition et une logique guidée très simple : tu choisis une intention,
-      le site te propose des runes adaptées, puis tu les assembles sur un parchemin numérique.
+      Choisis une intention avec un combo usuel, sélectionne jusqu’à 6 runes si tu veux personnaliser, puis compose ta bindrune sur le parchemin.
     </p>
 
     <div class="layout">
@@ -433,30 +352,23 @@
               <select id="intentionSelect"></select>
             </div>
 
-            
-
-            
-
-            <div class="field-inline">
-              <div class="field">
-                <label for="structureSelect">Structure</label>
-                <select id="structureSelect">
-                  <option value="">Auto</option>
-                  <option>hampe centrale</option>
-                  <option>base + sommet</option>
-                  <option>miroir léger</option>
-                  <option>autre</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="supportInput">Support</label>
-                <input id="supportInput" type="text" placeholder="papier, bois, carnet..." />
-              </div>
+            <div class="field">
+              <label for="supportSelect">Choix du support</label>
+              <select id="supportSelect">
+                <option value="">Choisir un support</option>
+                <option value="papier">papier</option>
+                <option value="bois">bois</option>
+                <option value="pierre">pierre</option>
+                <option value="bijou">bijou</option>
+                <option value="cuir">cuir</option>
+                <option value="carnet">carnet</option>
+                <option value="autre">autre</option>
+              </select>
             </div>
 
             <div class="btn-row">
-              <button class="btn-accent" id="applySuggestion">Appliquer la suggestion</button>
-              <button id="clearSuggestion">Vider les slots</button>
+              <button class="btn-accent" id="applySuggestion">Choisir ce combo</button>
+              <button id="clearSuggestion">Vider</button>
             </div>
 
             <div class="subtle" id="intentionSummary"></div>
@@ -464,18 +376,19 @@
         </section>
 
         <section class="panel">
-          <h2>2) Sélection manuelle</h2>
+          <h2>2) Sélection de 6 runes</h2>
+          <div class="subtle" style="margin-bottom:10px;">Choisis jusqu’à 6 runes pour remplir le parchemin de composition.</div>
           <div class="slots" id="slotSelectors"></div>
           <div class="divider"></div>
           <div class="btn-row">
-            <button id="fillRecommended">Remplir depuis l’intention</button>
-            <button id="clearAllSlots">Effacer les slots</button>
+            <button id="fillRecommended">Remplir avec le combo</button>
+            <button id="clearAllSlots">Effacer</button>
           </div>
         </section>
 
         <section class="panel">
           <h2>3) Actions canevas</h2>
-          <div class="btn-row" style="margin-top:4px;">
+          <div class="btn-row">
             <button id="flipHorizontal">Retourner H</button>
             <button id="flipVertical">Retourner V</button>
           </div>
@@ -528,22 +441,20 @@
           <div class="stack">
             <div>
               <span class="badge" id="badgeIntention">Intention : —</span>
-              <span class="badge" id="badgeStructure">Structure : —</span>
+              <span class="badge" id="badgeSupport">Support : —</span>
             </div>
             <div class="subtle" id="selectedRunesText">Aucune rune sélectionnée.</div>
             <div class="subtle" id="meaningText">Choisis une intention ou ajoute une rune pour voir les explications.</div>
           </div>
         </section>
 
-        
-
         <section class="panel">
           <h2>Conseils du grimoire</h2>
           <div class="subtle">
-            <p><strong>Pour débuter :</strong> garde 2 à 4 runes.</p>
-            <p><strong>Ordre recommandé :</strong> 1 rune principale, 1 soutien, 1 soutien secondaire, 1 protection / stabilisation.</p>
-            <p><strong>Conseil :</strong> garde la rune principale la plus visible au centre.</p>
-            <p><strong>Rappel :</strong> les significations ici sont données dans un cadre pratique moderne.</p>
+            <p><strong>Pour débuter :</strong> 2 à 4 runes donnent souvent le résultat le plus lisible.</p>
+            <p><strong>Mode guidé :</strong> une intention propose un combo usuel fréquent.</p>
+            <p><strong>Personnalisation :</strong> les 6 slots permettent d’essayer librement plusieurs assemblages.</p>
+            <p><strong>Rappel :</strong> les significations ici sont présentées dans un cadre pratique moderne.</p>
           </div>
         </section>
       </aside>
@@ -579,50 +490,26 @@
     ];
 
     const INTENTIONS = {
-      'Protection': {
-        runes: ['Algiz', 'Thurisaz', 'Eihwaz', 'Tiwaz'],
-        logic: 'Bouclier, défense active, endurance et tenue morale.',
-        structure: 'hampe centrale'
-      },
-      'Prospérité': {
-        runes: ['Fehu', 'Jera', 'Othala', 'Sowilo'],
-        logic: 'Flux de ressources, récolte, stabilité et élan.',
-        structure: 'base + sommet'
-      },
-      'Guérison': {
-        runes: ['Berkano', 'Uruz', 'Kenaz', 'Sowilo'],
-        logic: 'Soin, force vitale, chaleur réparatrice et énergie.',
-        structure: 'hampe centrale'
-      },
-      'Ancrage': {
-        runes: ['Othala', 'Eihwaz', 'Isa', 'Ingwaz'],
-        logic: 'Racines, axe intérieur, stabilisation et recentrage.',
-        structure: 'base + sommet'
-      },
-      'Voyage': {
-        runes: ['Raidho', 'Ehwaz', 'Algiz', 'Laguz'],
-        logic: 'Route juste, déplacement fluide, protection et adaptation.',
-        structure: 'hampe centrale'
-      },
-      'Mémoire': {
-        runes: ['Mannaz', 'Ansuz', 'Kenaz', 'Isa'],
-        logic: 'Esprit, langage, clarté et concentration.',
-        structure: 'miroir léger'
-      }
+      'Protection': { runes: ['Algiz', 'Thurisaz', 'Eihwaz', 'Tiwaz'], logic: 'Combo usuel fréquent pour la protection, la défense et la stabilité.' },
+      'Prospérité': { runes: ['Fehu', 'Jera', 'Othala', 'Sowilo'], logic: 'Combo usuel fréquent pour les ressources, la récolte et l’élan.' },
+      'Guérison': { runes: ['Berkano', 'Uruz', 'Kenaz', 'Sowilo'], logic: 'Combo usuel fréquent pour le soin, la force et la régénération.' },
+      'Ancrage': { runes: ['Othala', 'Eihwaz', 'Isa', 'Ingwaz'], logic: 'Combo usuel fréquent pour l’enracinement et le recentrage.' },
+      'Voyage': { runes: ['Raidho', 'Ehwaz', 'Algiz', 'Laguz'], logic: 'Combo usuel fréquent pour un déplacement fluide et protégé.' },
+      'Mémoire': { runes: ['Mannaz', 'Ansuz', 'Kenaz', 'Isa'], logic: 'Combo usuel fréquent pour l’esprit, la clarté et la concentration.' }
     };
 
-    const SLOT_LABELS = ['Principale', 'Soutien 1', 'Soutien 2', 'Protection / stabilisation'];
+    const SLOT_LABELS = ['Rune 1', 'Rune 2', 'Rune 3', 'Rune 4', 'Rune 5', 'Rune 6'];
+
     const selectorsHost = document.getElementById('slotSelectors');
     const suggestionsHost = document.getElementById('suggestions');
     const intentionSelect = document.getElementById('intentionSelect');
-    const structureSelect = document.getElementById('structureSelect');
-            const supportInput = document.getElementById('supportInput');
+    const supportSelect = document.getElementById('supportSelect');
     const intentionSummary = document.getElementById('intentionSummary');
     const badgeIntention = document.getElementById('badgeIntention');
-    const badgeStructure = document.getElementById('badgeStructure');
+    const badgeSupport = document.getElementById('badgeSupport');
     const selectedRunesText = document.getElementById('selectedRunesText');
     const meaningText = document.getElementById('meaningText');
-        
+
     const canvasContainer = document.getElementById('canvas-container');
     const canvas = new fabric.Canvas('runeCanvas', {
       backgroundColor: '#f5f0e8',
@@ -630,7 +517,7 @@
     });
 
     const runeObjects = {};
-    const slotValues = new Array(4).fill('');
+    const slotValues = new Array(6).fill('');
     const moveIncrement = 2;
 
     function getRuneByName(name) {
@@ -687,27 +574,18 @@
       });
     }
 
-    function nextEmptySlot() {
-      return slotValues.findIndex(v => !v);
-    }
-
     function renderSuggestions() {
       suggestionsHost.innerHTML = '';
       const intention = intentionSelect.value;
-
       let list = [];
+
       if (intention && INTENTIONS[intention]) {
         list = INTENTIONS[intention].runes.map(name => getRuneByName(name)).filter(Boolean);
       } else {
-        list = [...RUNES];
+        list = RUNES.slice(0, 8);
       }
 
-      if (!list.length) {
-        suggestionsHost.innerHTML = '<div class="empty">Aucune rune trouvée pour cette recherche.</div>';
-        return;
-      }
-
-      list.forEach((rune, idx) => {
+      list.forEach((rune) => {
         const card = document.createElement('div');
         card.className = 'rune-card';
         card.innerHTML = `
@@ -728,6 +606,7 @@
       suggestionsHost.querySelectorAll('[data-add]').forEach(btn => {
         btn.addEventListener('click', () => addRuneToNextSlot(btn.dataset.add));
       });
+
       suggestionsHost.querySelectorAll('[data-main]').forEach(btn => {
         btn.addEventListener('click', () => setSlotRune(0, btn.dataset.main));
       });
@@ -735,29 +614,34 @@
 
     function getRecommendedNames() {
       const intention = intentionSelect.value;
-      return intention && INTENTIONS[intention] ? INTENTIONS[intention].runes.slice(0, 4) : [];
+      return intention && INTENTIONS[intention] ? INTENTIONS[intention].runes.slice(0, 6) : [];
     }
 
     function applyIntentionText() {
       const intention = intentionSelect.value;
       if (!intention || !INTENTIONS[intention]) {
-        intentionSummary.textContent = 'Choisis une intention pour recevoir une proposition guidée.';
+        intentionSummary.textContent = 'Choisis une intention pour recevoir un combo usuel fréquent.';
         badgeIntention.textContent = 'Intention : —';
-        if (!structureSelect.value) badgeStructure.textContent = 'Structure : —';
+        badgeSupport.textContent = `Support : ${supportSelect.value || '—'}`;
         return;
       }
+
       const info = INTENTIONS[intention];
-      intentionSummary.innerHTML = `<strong>Suggestion :</strong> ${info.logic}<br><strong>Structure conseillée :</strong> ${info.structure}`;
+      intentionSummary.innerHTML = `<strong>Combo usuel fréquent :</strong> ${info.runes.join(' + ')}<br><strong>Lecture :</strong> ${info.logic}`;
       badgeIntention.textContent = `Intention : ${intention}`;
-      if (!structureSelect.value) {
-        badgeStructure.textContent = `Structure : ${info.structure}`;
-      }
+      badgeSupport.textContent = `Support : ${supportSelect.value || '—'}`;
+    }
+
+    function nextEmptySlot() {
+      return slotValues.findIndex(v => !v);
     }
 
     function setSlotRune(index, runeName) {
       slotValues[index] = runeName || '';
       const select = document.getElementById(`slot-${index}`);
-      if (select && select.value !== runeName) select.value = runeName || '';
+      if (select && select.value !== runeName) {
+        select.value = runeName || '';
+      }
       syncCanvasFromSlots();
       updateSummary();
     }
@@ -765,7 +649,7 @@
     function addRuneToNextSlot(name) {
       const idx = nextEmptySlot();
       if (idx === -1) {
-        setSlotRune(3, name);
+        setSlotRune(5, name);
         return;
       }
       setSlotRune(idx, name);
@@ -774,9 +658,6 @@
     function fillRecommended() {
       const names = getRecommendedNames();
       SLOT_LABELS.forEach((_, i) => setSlotRune(i, names[i] || ''));
-      if (!structureSelect.value && intentionSelect.value) {
-        structureSelect.value = INTENTIONS[intentionSelect.value].structure;
-      }
       updateSummary();
     }
 
@@ -794,9 +675,11 @@
       const h = canvas.getHeight();
       const placements = [
         { left: w / 2, top: h / 2 },
-        { left: w / 2 - w * 0.05, top: h / 2 },
-        { left: w / 2 + w * 0.05, top: h / 2 },
-        { left: w / 2, top: h / 2 - h * 0.06 },
+        { left: w / 2 - w * 0.06, top: h / 2 },
+        { left: w / 2 + w * 0.06, top: h / 2 },
+        { left: w / 2, top: h / 2 - h * 0.08 },
+        { left: w / 2 - w * 0.03, top: h / 2 + h * 0.08 },
+        { left: w / 2 + w * 0.03, top: h / 2 + h * 0.08 }
       ];
       return placements[index] || { left: w / 2, top: h / 2 };
     }
@@ -808,11 +691,11 @@
         top: pos.top,
         originX: 'center',
         originY: 'center',
-        fontSize: canvas.getWidth() * (slotIndex === 0 ? 0.34 : 0.28),
+        fontSize: canvas.getWidth() * (slotIndex === 0 ? 0.31 : 0.24),
         fontFamily: 'serif',
         fill: '#111111',
         stroke: '#111111',
-        strokeWidth: 0.4,
+        strokeWidth: 0.35,
         cornerColor: '#d6a85f',
         borderColor: '#d6a85f',
         transparentCorners: false,
@@ -829,6 +712,7 @@
         const key = `slot-${index}`;
         const runeName = slotValues[index];
         const obj = runeObjectForSlot(key);
+
         if (!runeName) {
           if (obj) {
             canvas.remove(obj);
@@ -843,12 +727,10 @@
         if (!obj) {
           createRuneObject(rune, index);
         } else {
-          obj.set({
-            text: rune.char,
-            runeName: rune.name
-          });
+          obj.set({ text: rune.char, runeName: rune.name });
         }
       });
+
       canvas.renderAll();
     }
 
@@ -869,36 +751,17 @@
 
     function updateSummary() {
       const selected = selectedRunesData();
-      const intention = intentionSelect.value;
-      const structure = structureSelect.value || (intention && INTENTIONS[intention] ? INTENTIONS[intention].structure : '—');
-      badgeIntention.textContent = `Intention : ${intention || '—'}`;
-      badgeStructure.textContent = `Structure : ${structure || '—'}`;
+      badgeIntention.textContent = `Intention : ${intentionSelect.value || '—'}`;
+      badgeSupport.textContent = `Support : ${supportSelect.value || '—'}`;
 
       if (!selected.length) {
         selectedRunesText.textContent = 'Aucune rune sélectionnée.';
         meaningText.textContent = 'Choisis une intention ou ajoute une rune pour voir les explications.';
-        updateSheetPreview();
         return;
       }
 
       selectedRunesText.innerHTML = selected.map(r => `${r.name} ${r.char}`).join(' · ');
       meaningText.innerHTML = selected.map(r => `<strong>${r.name}</strong> : ${r.meanings}`).join('<br>');
-      updateSheetPreview();
-    }
-
-    function getReadingText() {
-      const selected = selectedRunesData();
-      if (!selected.length) return '';
-      return selected.map(r => `${r.name}: ${r.meanings}`).join(' | ');
-    }
-
-    function getGlyphString() {
-      return selectedRunesData().map(r => r.char).join(' ');
-    }
-      updateSheetPreview();
-      setTimeout(() => {
-        copyStatus.textContent = '';
-      }, 2800);
     }
 
     function resetCanvasAndState() {
@@ -906,7 +769,7 @@
       canvas.backgroundColor = '#f5f0e8';
       Object.keys(runeObjects).forEach(k => delete runeObjects[k]);
       slotValues.fill('');
-      document.querySelectorAll('#slotSelectors select').forEach(s => s.value = '');
+      document.querySelectorAll('#slotSelectors select').forEach(s => { s.value = ''; });
       resizeCanvas();
       updateSummary();
     }
@@ -988,7 +851,10 @@
       updateSummary();
     });
 
-    structureSelect.addEventListener('change', updateSummary);
+    supportSelect.addEventListener('change', () => {
+      applyIntentionText();
+      updateSummary();
+    });
 
     document.addEventListener('keydown', (event) => {
       const obj = getActive();
