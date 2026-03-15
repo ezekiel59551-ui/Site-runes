@@ -3,307 +3,504 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Apprentissage aux Bindrunes</title>
+  <title>Créateur de Bindrunes — Atelier ésotérique</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
   <style>
     :root {
-      --bg: #20160f;
-      --panel: rgba(84, 63, 41, 0.78);
-      --panel-2: rgba(120, 92, 59, 0.22);
-      --text: #2f2014;
-      --text-light: #f6ead2;
-      --muted: #6f5437;
-      --accent: #b8893c;
-      --accent-2: #e2c98a;
-      --border: #8a6a3e;
-      --parchment: #efe0b8;
-      --parchment-2: #e2c993;
-      --shadow: rgba(42, 24, 10, 0.35);
+      --bg: #0d0b09;
+      --panel: rgba(22, 17, 13, 0.96);
+      --text: #f4ead8;
+      --muted: #cbb89a;
+      --accent: #c9a35f;
+      --accent-2: #e5c98f;
+      --border: #4a3927;
+      --border-soft: #6a5338;
+      --paper: #efe2c7;
+      --paper-2: #e2d1af;
+      --shadow: 0 14px 38px rgba(0,0,0,.34);
     }
+
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
-      font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+      font-family: Georgia, "Times New Roman", serif;
       background:
-        radial-gradient(circle at top, rgba(255, 215, 130, 0.10), transparent 28%),
-        radial-gradient(circle at 20% 10%, rgba(255, 236, 173, 0.08), transparent 18%),
-        linear-gradient(180deg, #1a120c, #2a1d13 42%, #140d08);
-      color: var(--text-light);
-      position: relative;
-      overflow-x: hidden;
+        radial-gradient(circle at top, rgba(201,163,95,.08), transparent 32%),
+        radial-gradient(circle at bottom, rgba(120,87,41,.08), transparent 30%),
+        linear-gradient(180deg, #0b0907, #16110d 46%, #0d0a08);
+      color: var(--text);
     }
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background:
-        radial-gradient(circle at 15% 20%, rgba(255, 219, 143, 0.07), transparent 12%),
-        radial-gradient(circle at 75% 15%, rgba(255, 215, 130, 0.05), transparent 10%),
-        radial-gradient(circle at 65% 75%, rgba(255, 236, 173, 0.05), transparent 12%);
-      mix-blend-mode: screen;
-    }
+
     .wrap {
-      max-width: 1200px;
+      max-width: 1360px;
       margin: 0 auto;
       padding: 24px;
     }
+
     h1 {
       margin: 0 0 8px;
-      font-size: 2.4rem;
-      letter-spacing: 0.03em;
+      font-size: 2.1rem;
       color: var(--accent-2);
-      text-shadow: 0 0 12px rgba(226, 201, 138, 0.22);
+      text-shadow: 0 0 14px rgba(201,163,95,.12);
     }
+
     .lead {
       margin: 0 0 24px;
-      color: #ead9b7;
-      max-width: 780px;
-      line-height: 1.6;
-      font-size: 1.02rem;
+      color: var(--muted);
+      max-width: 900px;
+      line-height: 1.65;
     }
-    .grid {
+
+    .layout {
       display: grid;
-      grid-template-columns: 360px 1fr;
-      gap: 20px;
+      grid-template-columns: 340px minmax(380px, 1fr) 320px;
+      gap: 18px;
+      align-items: start;
     }
+
+    .stack {
+      display: grid;
+      gap: 14px;
+    }
+
     .panel {
-      background:
-        linear-gradient(180deg, rgba(246, 231, 196, 0.96), rgba(227, 204, 153, 0.93));
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      padding: 18px;
-      box-shadow: 0 14px 40px var(--shadow), inset 0 0 0 1px rgba(255, 239, 197, 0.35);
       position: relative;
-      color: var(--text);
+      background: linear-gradient(180deg, rgba(255,255,255,.015), rgba(0,0,0,.06)), var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
     }
+
     .panel::before {
-      content: "✦";
+      content: "";
       position: absolute;
-      top: 10px;
-      right: 14px;
-      color: rgba(136, 91, 28, 0.35);
-      font-size: 1rem;
+      inset: 8px;
+      border: 1px solid rgba(201,163,95,.14);
+      border-radius: 14px;
+      pointer-events: none;
     }
+
     .panel h2 {
-      margin: 0 0 14px;
-      font-size: 1.12rem;
-      color: #6e4518;
-      letter-spacing: 0.04em;
+      margin: 0 0 12px;
+      font-size: 1rem;
+      color: var(--accent-2);
+      letter-spacing: .05em;
       text-transform: uppercase;
     }
-    .selectors {
-      display: grid;
-      gap: 10px;
-    }
+
     .field {
       display: grid;
       gap: 6px;
     }
+
     label {
-      font-size: .92rem;
-      color: #6b4b2a;
-      font-weight: 600;
+      font-size: .84rem;
+      color: var(--muted);
+      letter-spacing: .04em;
+      text-transform: uppercase;
     }
-    select, button, input {
+
+    select, button {
       width: 100%;
       border: 1px solid var(--border);
-      background: rgba(255, 247, 225, 0.78);
-      color: #392516;
+      background: linear-gradient(180deg, #261d15, #1d1611);
+      color: var(--text);
       border-radius: 12px;
-      padding: 10px 12px;
-      font-size: .96rem;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.35);
+      padding: 8px 10px;
+      font-size: .9rem;
+      font-family: inherit;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
     }
+
+    select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background:
+        linear-gradient(180deg, #261d15, #1d1611),
+        linear-gradient(45deg, transparent 50%, var(--accent-2) 50%),
+        linear-gradient(135deg, var(--accent-2) 50%, transparent 50%);
+      background-repeat: no-repeat;
+      background-position: 0 0, calc(100% - 18px) 50%, calc(100% - 12px) 50%;
+      background-size: 100% 100%, 6px 6px, 6px 6px;
+      padding-right: 34px;
+    }
+
+    select option {
+      background: #17110d;
+      color: #f4ead8;
+    }
+
     button {
       cursor: pointer;
-      transition: .18s ease;
+      transition: .16s ease;
     }
+
     button:hover {
-      border-color: #9f6d25;
+      border-color: var(--accent);
       transform: translateY(-1px);
-      box-shadow: 0 6px 18px rgba(120, 77, 20, 0.18);
     }
+
     .btn-accent {
-      background: linear-gradient(180deg, #d8b46a, #b07a2d);
-      color: #fff7e8;
+      background: linear-gradient(180deg, #d8b171, #b98a43);
+      color: #1a120b;
       font-weight: 700;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.25);
+      border-color: #9b7238;
     }
+
+    .btn-soft {
+      background: linear-gradient(180deg, #34271c, #281f17);
+      color: var(--accent-2);
+    }
+
     .btn-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 10px;
+      gap: 8px;
     }
+
     .btn-row-3 {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 10px;
+      gap: 8px;
     }
+
+    .slots {
+      display: grid;
+      gap: 8px;
+    }
+
+    .slot-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .slot-tag {
+      font-size: .7rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      min-width: 46px;
+      text-align: right;
+    }
+
+    .subtle {
+      color: var(--muted);
+      font-size: .9rem;
+      line-height: 1.55;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      background: linear-gradient(180deg, #2a2017, #1f1812);
+      color: var(--accent-2);
+      font-size: .82rem;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(201,163,95,.45), transparent);
+      margin: 4px 0;
+    }
+
     .canvas-wrap {
       display: grid;
       gap: 18px;
     }
+
     .canvas-box {
-      background:
-        radial-gradient(circle at 30% 20%, rgba(255,255,255,0.25), transparent 22%),
-        linear-gradient(180deg, var(--parchment), var(--parchment-2));
-      border-radius: 22px;
-      border: 2px solid #8a6a3e;
+      position: relative;
+      background: radial-gradient(circle at top, rgba(255,255,255,.12), transparent 30%), linear-gradient(180deg, var(--paper), var(--paper-2));
+      border-radius: 20px;
+      border: 2px solid var(--border);
       overflow: hidden;
       aspect-ratio: 1/1;
-      min-height: 420px;
-      box-shadow: inset 0 0 40px rgba(122, 81, 31, 0.18);
-      position: relative;
+      min-height: 430px;
+      box-shadow: inset 0 0 40px rgba(84,58,26,.08);
     }
-    .canvas-box::before,
-    .canvas-box::after {
-      content: "☘";
+
+    .canvas-box::before {
+      content: "";
       position: absolute;
-      color: rgba(111, 84, 55, 0.18);
-      font-size: 1.5rem;
-      z-index: 2;
+      inset: 10px;
+      border: 1px solid rgba(90,63,30,.28);
+      border-radius: 14px;
       pointer-events: none;
     }
-    .canvas-box::before { top: 10px; left: 12px; }
-    .canvas-box::after { bottom: 10px; right: 12px; transform: rotate(180deg); }
+
+    .canvas-box::after {
+      content: "ᚠ ᚱ ᛉ ᛟ";
+      position: absolute;
+      bottom: 14px;
+      right: 18px;
+      color: rgba(54,35,18,.25);
+      font-size: 1rem;
+      letter-spacing: .3em;
+      pointer-events: none;
+    }
+
     #runeCanvas {
       display: block;
       width: 100%;
       height: 100%;
     }
-    .help {
-      color: #4c3420;
-      font-size: .95rem;
-      line-height: 1.55;
-      background:
-        linear-gradient(180deg, rgba(250, 239, 209, 0.96), rgba(233, 214, 171, 0.94));
+
+    .suggestions {
+      display: grid;
+      gap: 10px;
     }
+
+    .rune-card {
+      display: grid;
+      grid-template-columns: 52px 1fr auto;
+      gap: 10px;
+      align-items: start;
+      padding: 10px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,.015), rgba(0,0,0,.04)), rgba(34,26,20,.88);
+    }
+
+    .rune-glyph {
+      display: grid;
+      place-items: center;
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      border: 1px solid var(--border-soft);
+      background: radial-gradient(circle at top, #34271b, #1b140f 70%);
+      color: var(--accent-2);
+      font-size: 1.75rem;
+      line-height: 1;
+    }
+
+    .rune-card h3 {
+      margin: 0 0 4px;
+      font-size: .98rem;
+    }
+
+    .rune-meta {
+      font-size: .82rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-style: italic;
+    }
+
+    .rune-desc {
+      font-size: .88rem;
+      line-height: 1.45;
+    }
+
+    .rune-actions {
+      display: grid;
+      gap: 6px;
+      width: 84px;
+    }
+
     .kbd {
       display: inline-block;
       padding: 2px 6px;
-      border: 1px solid #9a7748;
+      border: 1px solid var(--border);
       border-radius: 8px;
-      background: rgba(111, 84, 55, 0.12);
-      color: #5c3d1f;
+      background: #241b14;
+      color: var(--text);
       font-size: .82rem;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.3);
     }
-    .footer-note {
-      margin-top: 18px;
-      color: #6b4b2a;
-      font-size: .88rem;
-      line-height: 1.5;
-    }
-    @media (max-width: 920px) {
-      .grid { grid-template-columns: 1fr; }
+
+    @media (max-width: 1180px) {
+      .layout { grid-template-columns: 1fr; }
       .canvas-box { min-height: 360px; }
     }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <h1>Créateur de Bindrunes</h1>
-    <div style="margin: 0 0 10px; color: #d9bc7a; letter-spacing: .18em; text-transform: uppercase; font-size: .82rem;">Grimoire de composition runique</div>
+    <h1>Créateur de Bindrunes — Atelier ésotérique</h1>
     <p class="lead">
-      Compose jusqu’à 6 runes du Futhark ancien dans un atelier inspiré des grimoires, des vieux parchemins et d’une esthétique celtique enchantée.
-      Déplace-les, retourne-les, superpose-les et exporte ta bindrune comme un sceau magique personnel.
+      Choisis une intention avec un combo usuel, sélectionne jusqu’à 6 runes si tu veux personnaliser, puis compose ta bindrune sur le parchemin.
     </p>
 
-    <div class="grid">
-      <aside class="panel">
-        <h2>Runes</h2>
-        <div class="selectors" id="selectors"></div>
+    <div class="layout">
+      <aside class="stack">
+        <section class="panel">
+          <h2>1) Mode guidé</h2>
+          <div class="stack">
+            <div class="field">
+              <label for="intentionSelect">Intention</label>
+              <select id="intentionSelect"></select>
+            </div>
 
-        <div class="btn-row" style="margin-top:14px;">
-          <button id="flipHorizontal">Retourner H</button>
-          <button id="flipVertical">Retourner V</button>
-        </div>
-        <div class="btn-row">
-          <button id="deleteRune">Supprimer</button>
-          <button id="centerRune">Centrer</button>
-        </div>
-        <div class="btn-row-3">
-          <button id="moveUp">↑</button>
-          <button id="moveLeft">←</button>
-          <button id="moveRight">→</button>
-        </div>
-        <div class="btn-row-3">
-          <div></div>
-          <button id="moveDown">↓</button>
-          <div></div>
-        </div>
-        <div class="btn-row">
-          <button class="btn-accent" id="downloadPng">Exporter PNG</button>
-          <button id="resetCanvas">Reset</button>
-        </div>
+            <div class="field">
+              <label for="supportSelect">Choix du support</label>
+              <select id="supportSelect">
+                <option value="">Choisir un support</option>
+                <option value="papier">papier</option>
+                <option value="bois">bois</option>
+                <option value="pierre">pierre</option>
+                <option value="bijou">bijou</option>
+                <option value="cuir">cuir</option>
+                <option value="carnet">carnet</option>
+                <option value="autre">autre</option>
+              </select>
+            </div>
 
-        <div class="footer-note">
-          Astuce : sélectionne une rune sur le canevas, puis utilise les touches
-          <span class="kbd">↑</span>
-          <span class="kbd">↓</span>
-          <span class="kbd">←</span>
-          <span class="kbd">→</span>
-          pour l’ajuster finement.
-        </div>
+            <div class="btn-row">
+              <button class="btn-accent" id="applySuggestion">Choisir ce combo</button>
+              <button id="clearSuggestion">Vider</button>
+            </div>
+
+            <div class="subtle" id="intentionSummary"></div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>2) Sélection de 6 runes</h2>
+          <div class="subtle" style="margin-bottom:10px;">Choisis jusqu’à 6 runes pour remplir le parchemin de composition.</div>
+          <div class="slots" id="slotSelectors"></div>
+          <div class="divider"></div>
+          <div class="btn-row">
+            <button id="fillRecommended">Remplir avec le combo</button>
+            <button id="clearAllSlots">Effacer</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>3) Actions canevas</h2>
+          <div class="btn-row">
+            <button id="flipHorizontal">Retourner H</button>
+            <button id="flipVertical">Retourner V</button>
+          </div>
+          <div class="btn-row">
+            <button id="deleteRune">Supprimer</button>
+            <button id="centerRune">Centrer</button>
+          </div>
+          <div class="btn-row-3">
+            <button id="bringForward">Monter</button>
+            <button id="moveUp">↑</button>
+            <button id="sendBackward">Descendre</button>
+          </div>
+          <div class="btn-row-3">
+            <button id="moveLeft">←</button>
+            <button id="moveDown">↓</button>
+            <button id="moveRight">→</button>
+          </div>
+          <div class="btn-row">
+            <button class="btn-accent" id="downloadPng">Exporter PNG</button>
+            <button id="resetCanvas">Reset</button>
+          </div>
+          <div class="subtle" style="margin-top:12px;">
+            Astuce : sélectionne une rune sur le canevas puis utilise aussi les touches
+            <span class="kbd">↑</span>
+            <span class="kbd">↓</span>
+            <span class="kbd">←</span>
+            <span class="kbd">→</span>
+            pour l’ajuster finement.
+          </div>
+        </section>
       </aside>
 
       <main class="canvas-wrap">
-        <div class="panel">
-          <h2>Composition</h2>
+        <section class="panel">
+          <h2>Parchemin de composition</h2>
           <div class="canvas-box" id="canvas-container">
             <canvas id="runeCanvas"></canvas>
           </div>
-        </div>
-        <div class="panel help">
-          <strong>Conseil du grimoire :</strong> garde 2 à 4 runes pour une bindrune lisible.
-          Place la rune principale au centre, puis ajoute les runes de soutien comme si tu traçais un sceau ancien. Tu peux superposer,
-          décaler légèrement ou retourner une rune pour équilibrer la forme.
-        </div>
+        </section>
+
+        <section class="panel">
+          <h2>Runes conseillées du grimoire</h2>
+          <div class="suggestions" id="suggestions"></div>
+        </section>
       </main>
+
+      <aside class="stack">
+        <section class="panel">
+          <h2>Fiche du scribe</h2>
+          <div class="stack">
+            <div>
+              <span class="badge" id="badgeIntention">Intention : —</span>
+              <span class="badge" id="badgeSupport">Support : —</span>
+            </div>
+            <div class="subtle" id="selectedRunesText">Aucune rune sélectionnée.</div>
+            <div class="subtle" id="meaningText">Choisis une intention ou ajoute une rune pour voir les explications.</div>
+          </div>
+        </section>
+      </aside>
     </div>
   </div>
 
   <script>
     const RUNES = [
-      { name: 'Aucune', char: '' },
-      { name: 'Fehu', char: 'ᚠ' },
-      { name: 'Uruz', char: 'ᚢ' },
-      { name: 'Thurisaz', char: 'ᚦ' },
-      { name: 'Ansuz', char: 'ᚨ' },
-      { name: 'Raidho', char: 'ᚱ' },
-      { name: 'Kenaz', char: 'ᚲ' },
-      { name: 'Gebo', char: 'ᚷ' },
-      { name: 'Wunjo', char: 'ᚹ' },
-      { name: 'Hagalaz', char: 'ᚺ' },
-      { name: 'Nauthiz', char: 'ᚾ' },
-      { name: 'Isa', char: 'ᛁ' },
-      { name: 'Jera', char: 'ᛃ' },
-      { name: 'Eihwaz', char: 'ᛇ' },
-      { name: 'Perthro', char: 'ᛈ' },
-      { name: 'Algiz', char: 'ᛉ' },
-      { name: 'Sowilo', char: 'ᛊ' },
-      { name: 'Tiwaz', char: 'ᛏ' },
-      { name: 'Berkano', char: 'ᛒ' },
-      { name: 'Ehwaz', char: 'ᛖ' },
-      { name: 'Mannaz', char: 'ᛗ' },
-      { name: 'Laguz', char: 'ᛚ' },
-      { name: 'Ingwaz', char: 'ᛜ' },
-      { name: 'Dagaz', char: 'ᛞ' },
-      { name: 'Othala', char: 'ᛟ' }
+      { name: 'Fehu', char: 'ᚠ', sound: 'f', aett: 1, meanings: 'richesse mobile, énergie, circulation', usage: 'argent, ressources, démarrage' },
+      { name: 'Uruz', char: 'ᚢ', sound: 'u', aett: 1, meanings: 'force vitale, endurance, puissance brute', usage: 'santé, courage, reconstruction' },
+      { name: 'Thurisaz', char: 'ᚦ', sound: 'th', aett: 1, meanings: 'défense, seuil, force réactive', usage: 'protection, couper une nuisance' },
+      { name: 'Ansuz', char: 'ᚨ', sound: 'a', aett: 1, meanings: 'parole, souffle, inspiration, message', usage: 'communication, étude, guidance' },
+      { name: 'Raidho', char: 'ᚱ', sound: 'r', aett: 1, meanings: 'route, mouvement juste, rythme', usage: 'voyage, progression, bon timing' },
+      { name: 'Kenaz', char: 'ᚲ', sound: 'k', aett: 1, meanings: 'torche, clarté, savoir-faire, révélation', usage: 'apprentissage, créativité, guérison ciblée' },
+      { name: 'Gebo', char: 'ᚷ', sound: 'g', aett: 1, meanings: 'don, échange, équilibre relationnel', usage: 'alliances, contrats, réciprocité' },
+      { name: 'Wunjo', char: 'ᚹ', sound: 'w / v', aett: 1, meanings: 'joie, harmonie, cohésion', usage: 'apaisement, ambiance, réussite fluide' },
+      { name: 'Hagalaz', char: 'ᚺ', sound: 'h', aett: 2, meanings: 'disruption, changement, nettoyage', usage: 'casser une stagnation' },
+      { name: 'Nauthiz', char: 'ᚾ', sound: 'n', aett: 2, meanings: 'nécessité, contrainte, discipline', usage: 'tenir bon, patience, survie' },
+      { name: 'Isa', char: 'ᛁ', sound: 'i', aett: 2, meanings: 'glace, arrêt, concentration, fixation', usage: 'stabiliser, ralentir, figer un excès' },
+      { name: 'Jera', char: 'ᛃ', sound: 'j / y', aett: 2, meanings: 'cycle, récolte, saison juste', usage: 'prospérité durable, résultats, patience' },
+      { name: 'Eihwaz', char: 'ᛇ', sound: 'ï / ei / y', aett: 2, meanings: 'axe, endurance, protection profonde', usage: 'ancrage, passage difficile, résistance' },
+      { name: 'Perthro', char: 'ᛈ', sound: 'p', aett: 2, meanings: 'mystère, potentiel caché, matrice', usage: 'intuition, déblocage' },
+      { name: 'Algiz', char: 'ᛉ', sound: 'z / ʀ', aett: 2, meanings: 'protection, vigilance, lien au sacré', usage: 'bouclier, sécurité, limites saines' },
+      { name: 'Sowilo', char: 'ᛊ', sound: 's', aett: 2, meanings: 'soleil, succès, vitalité, direction', usage: 'énergie, clarté, victoire' },
+      { name: 'Tiwaz', char: 'ᛏ', sound: 't', aett: 3, meanings: 'justice, honneur, décision, droiture', usage: 'leadership, arbitrage, courage moral' },
+      { name: 'Berkano', char: 'ᛒ', sound: 'b', aett: 3, meanings: 'croissance, soin, naissance', usage: 'guérison, douceur, nouveau départ' },
+      { name: 'Ehwaz', char: 'ᛖ', sound: 'e', aett: 3, meanings: 'confiance, coopération, avancée', usage: 'partenariat, déplacement, fluidité' },
+      { name: 'Mannaz', char: 'ᛗ', sound: 'm', aett: 3, meanings: 'humain, conscience, esprit, communauté', usage: 'mémoire, identité, relations' },
+      { name: 'Laguz', char: 'ᛚ', sound: 'l', aett: 3, meanings: 'eau, flux, intuition, adaptation', usage: 'émotions, voyage fluide, rêves' },
+      { name: 'Ingwaz', char: 'ᛜ', sound: 'ng', aett: 3, meanings: 'gestation, réserve, maturation interne', usage: 'préparation, recentrage, intériorité' },
+      { name: 'Dagaz', char: 'ᛞ', sound: 'd', aett: 3, meanings: 'jour, bascule, éveil, transformation claire', usage: 'percée, renouveau, déclic' },
+      { name: 'Othala', char: 'ᛟ', sound: 'o', aett: 3, meanings: 'héritage, maison, terre, appartenance', usage: 'foyer, lignage, enracinement' }
     ];
 
-    const selectorsHost = document.getElementById('selectors');
+    const INTENTIONS = {
+      'Protection': { runes: ['Algiz', 'Thurisaz', 'Eihwaz', 'Tiwaz'], logic: 'Combo usuel fréquent pour la protection, la défense et la stabilité.' },
+      'Prospérité': { runes: ['Fehu', 'Jera', 'Othala', 'Sowilo'], logic: 'Combo usuel fréquent pour les ressources, la récolte et l’élan.' },
+      'Guérison': { runes: ['Berkano', 'Uruz', 'Kenaz', 'Sowilo'], logic: 'Combo usuel fréquent pour le soin, la force et la régénération.' },
+      'Ancrage': { runes: ['Othala', 'Eihwaz', 'Isa', 'Ingwaz'], logic: 'Combo usuel fréquent pour l’enracinement et le recentrage.' },
+      'Voyage': { runes: ['Raidho', 'Ehwaz', 'Algiz', 'Laguz'], logic: 'Combo usuel fréquent pour un déplacement fluide et protégé.' },
+      'Mémoire': { runes: ['Mannaz', 'Ansuz', 'Kenaz', 'Isa'], logic: 'Combo usuel fréquent pour l’esprit, la clarté et la concentration.' }
+    };
+
+    const SLOT_LABELS = ['Rune 1', 'Rune 2', 'Rune 3', 'Rune 4', 'Rune 5', 'Rune 6'];
+
+    const selectorsHost = document.getElementById('slotSelectors');
+    const suggestionsHost = document.getElementById('suggestions');
+    const intentionSelect = document.getElementById('intentionSelect');
+    const supportSelect = document.getElementById('supportSelect');
+    const intentionSummary = document.getElementById('intentionSummary');
+    const badgeIntention = document.getElementById('badgeIntention');
+    const badgeSupport = document.getElementById('badgeSupport');
+    const selectedRunesText = document.getElementById('selectedRunesText');
+    const meaningText = document.getElementById('meaningText');
+
     const canvasContainer = document.getElementById('canvas-container');
     const canvas = new fabric.Canvas('runeCanvas', {
-      backgroundColor: '#efe0b8',
+      backgroundColor: '#f5f0e8',
       preserveObjectStacking: true
     });
 
     const runeObjects = {};
+    const slotValues = new Array(6).fill('');
     const moveIncrement = 2;
+
+    function getRuneByName(name) {
+      return RUNES.find(r => r.name === name);
+    }
 
     function resizeCanvas() {
       const size = canvasContainer.clientWidth;
@@ -312,60 +509,200 @@
       canvas.renderAll();
     }
 
-    function createSelectors() {
-      for (let i = 1; i <= 6; i++) {
-        const field = document.createElement('div');
-        field.className = 'field';
-        const label = document.createElement('label');
-        label.htmlFor = `rune${i}`;
-        label.textContent = `Rune ${i}`;
-        const select = document.createElement('select');
-        select.id = `rune${i}`;
-        select.dataset.slot = `rune${i}`;
-        RUNES.forEach(rune => {
-          const opt = document.createElement('option');
-          opt.value = rune.char;
-          opt.textContent = rune.char ? `${rune.name} ${rune.char}` : rune.name;
-          select.appendChild(opt);
-        });
-        select.addEventListener('change', handleRuneSelection);
-        field.appendChild(label);
-        field.appendChild(select);
-        selectorsHost.appendChild(field);
-      }
+    function initIntentionSelect() {
+      intentionSelect.innerHTML = '<option value="">Choisir une intention</option>';
+      Object.keys(INTENTIONS).forEach(key => {
+        const opt = document.createElement('option');
+        opt.value = key;
+        opt.textContent = key;
+        intentionSelect.appendChild(opt);
+      });
     }
 
-    function handleRuneSelection(e) {
-      const slotId = e.target.dataset.slot;
-      const char = e.target.value;
-      if (runeObjects[slotId]) {
-        canvas.remove(runeObjects[slotId]);
-        delete runeObjects[slotId];
-      }
-      if (!char) {
-        canvas.renderAll();
+    function createSlotSelectors() {
+      selectorsHost.innerHTML = '';
+      SLOT_LABELS.forEach((labelText, index) => {
+        const field = document.createElement('div');
+        field.className = 'field';
+
+        const label = document.createElement('label');
+        label.textContent = labelText;
+
+        const row = document.createElement('div');
+        row.className = 'slot-row';
+
+        const select = document.createElement('select');
+        select.id = `slot-${index}`;
+        select.dataset.index = index;
+        select.innerHTML = '<option value="">Aucune</option>' + RUNES.map(r => `<option value="${r.name}">${r.name} ${r.char}</option>`).join('');
+        select.addEventListener('change', (e) => {
+          const idx = Number(e.target.dataset.index);
+          setSlotRune(idx, e.target.value);
+        });
+
+        const tag = document.createElement('div');
+        tag.className = 'slot-tag';
+        tag.textContent = `Slot ${index + 1}`;
+
+        row.appendChild(select);
+        row.appendChild(tag);
+        field.appendChild(label);
+        field.appendChild(row);
+        selectorsHost.appendChild(field);
+      });
+    }
+
+    function renderSuggestions() {
+      suggestionsHost.innerHTML = '';
+      const intention = intentionSelect.value;
+      const list = intention && INTENTIONS[intention]
+        ? INTENTIONS[intention].runes.map(name => getRuneByName(name)).filter(Boolean)
+        : RUNES.slice(0, 8);
+
+      list.forEach((rune) => {
+        const card = document.createElement('div');
+        card.className = 'rune-card';
+        card.innerHTML = `
+          <div class="rune-glyph">${rune.char}</div>
+          <div>
+            <h3>${rune.name}</h3>
+            <div class="rune-meta">Ætt ${rune.aett} · son ${rune.sound}</div>
+            <div class="rune-desc"><strong>Sens :</strong> ${rune.meanings}<br><strong>Usages :</strong> ${rune.usage}</div>
+          </div>
+          <div class="rune-actions">
+            <button class="btn-soft" data-add="${rune.name}">Ajouter</button>
+            <button data-main="${rune.name}">Mettre en 1</button>
+          </div>
+        `;
+        suggestionsHost.appendChild(card);
+      });
+
+      suggestionsHost.querySelectorAll('[data-add]').forEach(btn => {
+        btn.addEventListener('click', () => addRuneToNextSlot(btn.dataset.add));
+      });
+
+      suggestionsHost.querySelectorAll('[data-main]').forEach(btn => {
+        btn.addEventListener('click', () => setSlotRune(0, btn.dataset.main));
+      });
+    }
+
+    function getRecommendedNames() {
+      const intention = intentionSelect.value;
+      return intention && INTENTIONS[intention] ? INTENTIONS[intention].runes.slice(0, 6) : [];
+    }
+
+    function applyIntentionText() {
+      const intention = intentionSelect.value;
+      if (!intention || !INTENTIONS[intention]) {
+        intentionSummary.textContent = 'Choisis une intention pour recevoir un combo usuel fréquent.';
+        badgeIntention.textContent = 'Intention : —';
+        badgeSupport.textContent = `Support : ${supportSelect.value || '—'}`;
         return;
       }
 
-      const text = new fabric.Text(char, {
-        left: canvas.getWidth() / 2,
-        top: canvas.getHeight() / 2,
+      const info = INTENTIONS[intention];
+      intentionSummary.innerHTML = `<strong>Combo usuel fréquent :</strong> ${info.runes.join(' + ')}<br><strong>Lecture :</strong> ${info.logic}`;
+      badgeIntention.textContent = `Intention : ${intention}`;
+      badgeSupport.textContent = `Support : ${supportSelect.value || '—'}`;
+    }
+
+    function nextEmptySlot() {
+      return slotValues.findIndex(v => !v);
+    }
+
+    function setSlotRune(index, runeName) {
+      slotValues[index] = runeName || '';
+      const select = document.getElementById(`slot-${index}`);
+      if (select && select.value !== runeName) select.value = runeName || '';
+      syncCanvasFromSlots();
+      updateSummary();
+    }
+
+    function addRuneToNextSlot(name) {
+      const idx = nextEmptySlot();
+      if (idx === -1) {
+        setSlotRune(5, name);
+        return;
+      }
+      setSlotRune(idx, name);
+    }
+
+    function fillRecommended() {
+      const names = getRecommendedNames();
+      SLOT_LABELS.forEach((_, i) => setSlotRune(i, names[i] || ''));
+      updateSummary();
+    }
+
+    function clearSlots() {
+      SLOT_LABELS.forEach((_, i) => setSlotRune(i, ''));
+      updateSummary();
+    }
+
+    function runeObjectForSlot(slotId) {
+      return runeObjects[slotId] || null;
+    }
+
+    function defaultPlacement(index) {
+      const w = canvas.getWidth();
+      const h = canvas.getHeight();
+      const placements = [
+        { left: w / 2, top: h / 2 },
+        { left: w / 2 - w * 0.06, top: h / 2 },
+        { left: w / 2 + w * 0.06, top: h / 2 },
+        { left: w / 2, top: h / 2 - h * 0.08 },
+        { left: w / 2 - w * 0.03, top: h / 2 + h * 0.08 },
+        { left: w / 2 + w * 0.03, top: h / 2 + h * 0.08 }
+      ];
+      return placements[index] || { left: w / 2, top: h / 2 };
+    }
+
+    function createRuneObject(rune, slotIndex) {
+      const pos = defaultPlacement(slotIndex);
+      const text = new fabric.Text(rune.char, {
+        left: pos.left,
+        top: pos.top,
         originX: 'center',
         originY: 'center',
-        fontSize: canvas.getWidth() * 0.34,
+        fontSize: canvas.getWidth() * (slotIndex === 0 ? 0.31 : 0.24),
         fontFamily: 'serif',
-        fill: '#2f2014',
-        stroke: '#4a301d',
-        strokeWidth: 0.4,
-        cornerColor: '#b8893c',
-        borderColor: '#b8893c',
+        fill: '#111111',
+        stroke: '#111111',
+        strokeWidth: 0.35,
+        cornerColor: '#d6a85f',
+        borderColor: '#d6a85f',
         transparentCorners: false,
-        slotId
+        slotId: `slot-${slotIndex}`,
+        runeName: rune.name
+      });
+      canvas.add(text);
+      runeObjects[`slot-${slotIndex}`] = text;
+      return text;
+    }
+
+    function syncCanvasFromSlots() {
+      SLOT_LABELS.forEach((_, index) => {
+        const key = `slot-${index}`;
+        const runeName = slotValues[index];
+        const obj = runeObjectForSlot(key);
+
+        if (!runeName) {
+          if (obj) {
+            canvas.remove(obj);
+            delete runeObjects[key];
+          }
+          return;
+        }
+
+        const rune = getRuneByName(runeName);
+        if (!rune) return;
+
+        if (!obj) {
+          createRuneObject(rune, index);
+        } else {
+          obj.set({ text: rune.char, runeName: rune.name });
+        }
       });
 
-      canvas.add(text);
-      canvas.setActiveObject(text);
-      runeObjects[slotId] = text;
       canvas.renderAll();
     }
 
@@ -378,6 +715,35 @@
       if (!obj) return;
       obj.set({ left: obj.left + dx, top: obj.top + dy });
       canvas.renderAll();
+    }
+
+    function selectedRunesData() {
+      return slotValues.map(name => getRuneByName(name)).filter(Boolean);
+    }
+
+    function updateSummary() {
+      const selected = selectedRunesData();
+      badgeIntention.textContent = `Intention : ${intentionSelect.value || '—'}`;
+      badgeSupport.textContent = `Support : ${supportSelect.value || '—'}`;
+
+      if (!selected.length) {
+        selectedRunesText.textContent = 'Aucune rune sélectionnée.';
+        meaningText.textContent = 'Choisis une intention ou ajoute une rune pour voir les explications.';
+        return;
+      }
+
+      selectedRunesText.innerHTML = selected.map(r => `${r.name} ${r.char}`).join(' · ');
+      meaningText.innerHTML = selected.map(r => `<strong>${r.name}</strong> : ${r.meanings}`).join('<br>');
+    }
+
+    function resetCanvasAndState() {
+      canvas.clear();
+      canvas.backgroundColor = '#f5f0e8';
+      Object.keys(runeObjects).forEach(k => delete runeObjects[k]);
+      slotValues.fill('');
+      document.querySelectorAll('#slotSelectors select').forEach(s => s.value = '');
+      resizeCanvas();
+      updateSummary();
     }
 
     document.getElementById('flipHorizontal').addEventListener('click', () => {
@@ -398,12 +764,15 @@
       const obj = getActive();
       if (!obj) return;
       if (obj.slotId) {
-        const select = document.querySelector(`[data-slot="${obj.slotId}"]`);
-        if (select) select.selectedIndex = 0;
+        const idx = Number(obj.slotId.replace('slot-', ''));
+        slotValues[idx] = '';
+        const select = document.getElementById(`slot-${idx}`);
+        if (select) select.value = '';
         delete runeObjects[obj.slotId];
       }
       canvas.remove(obj);
       canvas.renderAll();
+      updateSummary();
     });
 
     document.getElementById('centerRune').addEventListener('click', () => {
@@ -413,18 +782,24 @@
       canvas.renderAll();
     });
 
+    document.getElementById('bringForward').addEventListener('click', () => {
+      const obj = getActive();
+      if (!obj) return;
+      canvas.bringForward(obj);
+      canvas.renderAll();
+    });
+
+    document.getElementById('sendBackward').addEventListener('click', () => {
+      const obj = getActive();
+      if (!obj) return;
+      canvas.sendBackwards(obj);
+      canvas.renderAll();
+    });
+
     document.getElementById('moveUp').addEventListener('click', () => moveActive(0, -moveIncrement));
     document.getElementById('moveDown').addEventListener('click', () => moveActive(0, moveIncrement));
     document.getElementById('moveLeft').addEventListener('click', () => moveActive(-moveIncrement, 0));
     document.getElementById('moveRight').addEventListener('click', () => moveActive(moveIncrement, 0));
-
-    document.getElementById('resetCanvas').addEventListener('click', () => {
-      canvas.clear();
-      canvas.backgroundColor = '#efe0b8';
-      Object.keys(runeObjects).forEach(k => delete runeObjects[k]);
-      document.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
-      resizeCanvas();
-    });
 
     document.getElementById('downloadPng').addEventListener('click', () => {
       canvas.discardActiveObject();
@@ -434,6 +809,23 @@
       a.href = dataURL;
       a.download = 'bindrune.png';
       a.click();
+    });
+
+    document.getElementById('resetCanvas').addEventListener('click', resetCanvasAndState);
+    document.getElementById('applySuggestion').addEventListener('click', fillRecommended);
+    document.getElementById('fillRecommended').addEventListener('click', fillRecommended);
+    document.getElementById('clearSuggestion').addEventListener('click', clearSlots);
+    document.getElementById('clearAllSlots').addEventListener('click', clearSlots);
+
+    intentionSelect.addEventListener('change', () => {
+      applyIntentionText();
+      renderSuggestions();
+      updateSummary();
+    });
+
+    supportSelect.addEventListener('change', () => {
+      applyIntentionText();
+      updateSummary();
     });
 
     document.addEventListener('keydown', (event) => {
@@ -447,8 +839,12 @@
       }
     });
 
-    createSelectors();
+    initIntentionSelect();
+    createSlotSelectors();
     resizeCanvas();
+    renderSuggestions();
+    applyIntentionText();
+    updateSummary();
     window.addEventListener('resize', resizeCanvas);
   </script>
 </body>
