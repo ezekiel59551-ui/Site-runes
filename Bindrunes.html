@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Créateur de Bindrunes</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+  <style>
+    :root {
+      --bg: #111111;
+      --panel: #1a1a1a;
+      --panel-2: #222222;
+      --text: #f4efe6;
+      --muted: #c7b79a;
+      --accent: #d6a85f;
+      --border: #3a3024;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, #0d0d0d, #15120f 45%, #0d0d0d);
+      color: var(--text);
+    }
+    .wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 2rem;
+      color: var(--accent);
+    }
+    .lead {
+      margin: 0 0 24px;
+      color: var(--muted);
+      max-width: 760px;
+      line-height: 1.5;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 20px;
+    }
+    .panel {
+      background: rgba(26,26,26,.95);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+    .panel h2 {
+      margin: 0 0 14px;
+      font-size: 1.05rem;
+      color: var(--accent);
+    }
+    .selectors {
+      display: grid;
+      gap: 10px;
+    }
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+    label {
+      font-size: .9rem;
+      color: var(--muted);
+    }
+    select, button, input {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: .95rem;
+    }
+    button {
+      cursor: pointer;
+      transition: .18s ease;
+    }
+    button:hover {
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+    .btn-accent {
+      background: var(--accent);
+      color: #16120d;
+      font-weight: 700;
+    }
+    .btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .btn-row-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .canvas-wrap {
+      display: grid;
+      gap: 18px;
+    }
+    .canvas-box {
+      background: #f5f0e8;
+      border-radius: 18px;
+      border: 2px solid var(--border);
+      overflow: hidden;
+      aspect-ratio: 1/1;
+      min-height: 420px;
+    }
+    #runeCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .help {
+      color: var(--muted);
+      font-size: .9rem;
+      line-height: 1.45;
+    }
+    .kbd {
+      display: inline-block;
+      padding: 2px 6px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #241d16;
+      color: var(--text);
+      font-size: .82rem;
+    }
+    .footer-note {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: .85rem;
+    }
+    @media (max-width: 920px) {
+      .grid { grid-template-columns: 1fr; }
+      .canvas-box { min-height: 360px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Créateur de Bindrunes</h1>
+    <p class="lead">
+      Compose jusqu’à 6 runes du Futhark ancien, déplace-les, retourne-les et exporte ta bindrune en PNG.
+      Version originale, en français, prête à être mise en ligne sur un site.
+    </p>
+
+    <div class="grid">
+      <aside class="panel">
+        <h2>Runes</h2>
+        <div class="selectors" id="selectors"></div>
+
+        <div class="btn-row" style="margin-top:14px;">
+          <button id="flipHorizontal">Retourner H</button>
+          <button id="flipVertical">Retourner V</button>
+        </div>
+        <div class="btn-row">
+          <button id="deleteRune">Supprimer</button>
+          <button id="centerRune">Centrer</button>
+        </div>
+        <div class="btn-row-3">
+          <button id="moveUp">↑</button>
+          <button id="moveLeft">←</button>
+          <button id="moveRight">→</button>
+        </div>
+        <div class="btn-row-3">
+          <div></div>
+          <button id="moveDown">↓</button>
+          <div></div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-accent" id="downloadPng">Exporter PNG</button>
+          <button id="resetCanvas">Reset</button>
+        </div>
+
+        <div class="footer-note">
+          Astuce : sélectionne une rune sur le canevas, puis utilise les touches
+          <span class="kbd">↑</span>
+          <span class="kbd">↓</span>
+          <span class="kbd">←</span>
+          <span class="kbd">→</span>
+          pour l’ajuster finement.
+        </div>
+      </aside>
+
+      <main class="canvas-wrap">
+        <div class="panel">
+          <h2>Composition</h2>
+          <div class="canvas-box" id="canvas-container">
+            <canvas id="runeCanvas"></canvas>
+          </div>
+        </div>
+        <div class="panel help">
+          <strong>Conseil de composition :</strong> garde 2 à 4 runes pour une bindrune lisible.
+          Place la rune principale au centre, puis ajoute les runes de soutien. Tu peux superposer,
+          décaler légèrement ou retourner une rune pour équilibrer la forme.
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const RUNES = [
+      { name: 'Aucune', char: '' },
+      { name: 'Fehu', char: 'ᚠ' },
+      { name: 'Uruz', char: 'ᚢ' },
+      { name: 'Thurisaz', char: 'ᚦ' },
+      { name: 'Ansuz', char: 'ᚨ' },
+      { name: 'Raidho', char: 'ᚱ' },
+      { name: 'Kenaz', char: 'ᚲ' },
+      { name: 'Gebo', char: 'ᚷ' },
+      { name: 'Wunjo', char: 'ᚹ' },
+      { name: 'Hagalaz', char: 'ᚺ' },
+      { name: 'Nauthiz', char: 'ᚾ' },
+      { name: 'Isa', char: 'ᛁ' },
+      { name: 'Jera', char: 'ᛃ' },
+      { name: 'Eihwaz', char: 'ᛇ' },
+      { name: 'Perthro', char: 'ᛈ' },
+      { name: 'Algiz', char: 'ᛉ' },
+      { name: 'Sowilo', char: 'ᛊ' },
+      { name: 'Tiwaz', char: 'ᛏ' },
+      { name: 'Berkano', char: 'ᛒ' },
+      { name: 'Ehwaz', char: 'ᛖ' },
+      { name: 'Mannaz', char: 'ᛗ' },
+      { name: 'Laguz', char: 'ᛚ' },
+      { name: 'Ingwaz', char: 'ᛜ' },
+      { name: 'Dagaz', char: 'ᛞ' },
+      { name: 'Othala', char: 'ᛟ' }
+    ];
+
+    const selectorsHost = document.getElementById('selectors');
+    const canvasContainer = document.getElementById('canvas-container');
+    const canvas = new fabric.Canvas('runeCanvas', {
+      backgroundColor: '#f5f0e8',
+      preserveObjectStacking: true
+    });
+
+    const runeObjects = {};
+    const moveIncrement = 2;
+
+    function resizeCanvas() {
+      const size = canvasContainer.clientWidth;
+      canvas.setWidth(size);
+      canvas.setHeight(size);
+      canvas.renderAll();
+    }
+
+    function createSelectors() {
+      for (let i = 1; i <= 6; i++) {
+        const field = document.createElement('div');
+        field.className = 'field';
+        const label = document.createElement('label');
+        label.htmlFor = `rune${i}`;
+        label.textContent = `Rune ${i}`;
+        const select = document.createElement('select');
+        select.id = `rune${i}`;
+        select.dataset.slot = `rune${i}`;
+        RUNES.forEach(rune => {
+          const opt = document.createElement('option');
+          opt.value = rune.char;
+          opt.textContent = rune.char ? `${rune.name} ${rune.char}` : rune.name;
+          select.appendChild(opt);
+        });
+        select.addEventListener('change', handleRuneSelection);
+        field.appendChild(label);
+        field.appendChild(select);
+        selectorsHost.appendChild(field);
+      }
+    }
+
+    function handleRuneSelection(e) {
+      const slotId = e.target.dataset.slot;
+      const char = e.target.value;
+      if (runeObjects[slotId]) {
+        canvas.remove(runeObjects[slotId]);
+        delete runeObjects[slotId];
+      }
+      if (!char) {
+        canvas.renderAll();
+        return;
+      }
+
+      const text = new fabric.Text(char, {
+        left: canvas.getWidth() / 2,
+        top: canvas.getHeight() / 2,
+        originX: 'center',
+        originY: 'center',
+        fontSize: canvas.getWidth() * 0.34,
+        fontFamily: 'serif',
+        fill: '#111111',
+        stroke: '#111111',
+        strokeWidth: 0.4,
+        cornerColor: '#d6a85f',
+        borderColor: '#d6a85f',
+        transparentCorners: false,
+        slotId
+      });
+
+      canvas.add(text);
+      canvas.setActiveObject(text);
+      runeObjects[slotId] = text;
+      canvas.renderAll();
+    }
+
+    function getActive() {
+      return canvas.getActiveObject();
+    }
+
+    function moveActive(dx, dy) {
+      const obj = getActive();
+      if (!obj) return;
+      obj.set({ left: obj.left + dx, top: obj.top + dy });
+      canvas.renderAll();
+    }
+
+    document.getElementById('flipHorizontal').addEventListener('click', () => {
+      const obj = getActive();
+      if (!obj) return;
+      obj.toggle('flipX');
+      canvas.renderAll();
+    });
+
+    document.getElementById('flipVertical').addEventListener('click', () => {
+      const obj = getActive();
+      if (!obj) return;
+      obj.toggle('flipY');
+      canvas.renderAll();
+    });
+
+    document.getElementById('deleteRune').addEventListener('click', () => {
+      const obj = getActive();
+      if (!obj) return;
+      if (obj.slotId) {
+        const select = document.querySelector(`[data-slot="${obj.slotId}"]`);
+        if (select) select.selectedIndex = 0;
+        delete runeObjects[obj.slotId];
+      }
+      canvas.remove(obj);
+      canvas.renderAll();
+    });
+
+    document.getElementById('centerRune').addEventListener('click', () => {
+      const obj = getActive();
+      if (!obj) return;
+      obj.set({ left: canvas.getWidth() / 2, top: canvas.getHeight() / 2, originX: 'center', originY: 'center' });
+      canvas.renderAll();
+    });
+
+    document.getElementById('moveUp').addEventListener('click', () => moveActive(0, -moveIncrement));
+    document.getElementById('moveDown').addEventListener('click', () => moveActive(0, moveIncrement));
+    document.getElementById('moveLeft').addEventListener('click', () => moveActive(-moveIncrement, 0));
+    document.getElementById('moveRight').addEventListener('click', () => moveActive(moveIncrement, 0));
+
+    document.getElementById('resetCanvas').addEventListener('click', () => {
+      canvas.clear();
+      canvas.backgroundColor = '#f5f0e8';
+      Object.keys(runeObjects).forEach(k => delete runeObjects[k]);
+      document.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
+      resizeCanvas();
+    });
+
+    document.getElementById('downloadPng').addEventListener('click', () => {
+      canvas.discardActiveObject();
+      canvas.renderAll();
+      const dataURL = canvas.toDataURL({ format: 'png', quality: 1, multiplier: 2 });
+      const a = document.createElement('a');
+      a.href = dataURL;
+      a.download = 'bindrune.png';
+      a.click();
+    });
+
+    document.addEventListener('keydown', (event) => {
+      const obj = getActive();
+      if (!obj) return;
+      switch (event.key) {
+        case 'ArrowUp': event.preventDefault(); moveActive(0, -moveIncrement); break;
+        case 'ArrowDown': event.preventDefault(); moveActive(0, moveIncrement); break;
+        case 'ArrowLeft': event.preventDefault(); moveActive(-moveIncrement, 0); break;
+        case 'ArrowRight': event.preventDefault(); moveActive(moveIncrement, 0); break;
+      }
+    });
+
+    createSelectors();
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+  </script>
+</body>
+</html>
