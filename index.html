@@ -3,71 +3,95 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Créateur de Bindrunes</title>
+  <title>Créateur de Bindrunes — mode guidé + Google Sheets</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
   <style>
     :root {
       --bg: #111111;
       --panel: #1a1a1a;
       --panel-2: #222222;
+      --panel-3: #2b241c;
       --text: #f4efe6;
       --muted: #c7b79a;
       --accent: #d6a85f;
+      --accent-2: #f0c57f;
       --border: #3a3024;
+      --ok: #8dc98d;
+      --paper: #f5f0e8;
+      --shadow: 0 10px 30px rgba(0,0,0,.25);
     }
+
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: linear-gradient(180deg, #0d0d0d, #15120f 45%, #0d0d0d);
       color: var(--text);
     }
+
     .wrap {
-      max-width: 1200px;
+      max-width: 1360px;
       margin: 0 auto;
       padding: 24px;
     }
+
     h1 {
       margin: 0 0 8px;
       font-size: 2rem;
       color: var(--accent);
     }
+
     .lead {
       margin: 0 0 24px;
       color: var(--muted);
-      max-width: 760px;
-      line-height: 1.5;
+      max-width: 920px;
+      line-height: 1.55;
     }
-    .grid {
+
+    .layout {
       display: grid;
-      grid-template-columns: 360px 1fr;
+      grid-template-columns: 380px minmax(380px, 1fr) 360px;
       gap: 20px;
+      align-items: start;
     }
+
     .panel {
       background: rgba(26,26,26,.95);
       border: 1px solid var(--border);
       border-radius: 18px;
       padding: 18px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+      box-shadow: var(--shadow);
     }
+
     .panel h2 {
       margin: 0 0 14px;
       font-size: 1.05rem;
       color: var(--accent);
     }
-    .selectors {
+
+    .stack {
       display: grid;
-      gap: 10px;
+      gap: 14px;
     }
+
     .field {
       display: grid;
       gap: 6px;
     }
+
+    .field-inline {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
     label {
       font-size: .9rem;
       color: var(--muted);
     }
-    select, button, input {
+
+    select, button, input, textarea {
       width: 100%;
       border: 1px solid var(--border);
       background: var(--panel-2);
@@ -76,53 +100,86 @@
       padding: 10px 12px;
       font-size: .95rem;
     }
+
+    textarea {
+      min-height: 92px;
+      resize: vertical;
+      font-family: inherit;
+    }
+
     button {
       cursor: pointer;
       transition: .18s ease;
     }
+
     button:hover {
       border-color: var(--accent);
       transform: translateY(-1px);
     }
+
     .btn-accent {
       background: var(--accent);
       color: #16120d;
       font-weight: 700;
     }
+
+    .btn-soft {
+      background: var(--panel-3);
+      color: var(--accent-2);
+    }
+
     .btn-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
-      margin-top: 10px;
     }
+
     .btn-row-3 {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 10px;
-      margin-top: 10px;
     }
+
     .canvas-wrap {
       display: grid;
       gap: 18px;
     }
+
     .canvas-box {
-      background: #f5f0e8;
+      background: var(--paper);
       border-radius: 18px;
       border: 2px solid var(--border);
       overflow: hidden;
       aspect-ratio: 1/1;
       min-height: 420px;
     }
+
     #runeCanvas {
       display: block;
       width: 100%;
       height: 100%;
     }
-    .help {
+
+    .subtle {
       color: var(--muted);
       font-size: .9rem;
       line-height: 1.45;
     }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #241d16;
+      color: var(--accent-2);
+      font-size: .82rem;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+
     .kbd {
       display: inline-block;
       padding: 2px 6px;
@@ -132,109 +189,352 @@
       color: var(--text);
       font-size: .82rem;
     }
-    .footer-note {
-      margin-top: 18px;
-      color: var(--muted);
-      font-size: .85rem;
+
+    .selectors {
+      display: grid;
+      gap: 10px;
     }
-    @media (max-width: 920px) {
-      .grid { grid-template-columns: 1fr; }
+
+    .slots {
+      display: grid;
+      gap: 10px;
+    }
+
+    .slot-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .slot-tag {
+      font-size: .78rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .suggestions {
+      display: grid;
+      gap: 12px;
+    }
+
+    .rune-card {
+      display: grid;
+      grid-template-columns: 56px 1fr auto;
+      gap: 12px;
+      align-items: start;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(34,34,34,.85);
+    }
+
+    .rune-glyph {
+      display: grid;
+      place-items: center;
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #15120f;
+      color: var(--accent-2);
+      font-size: 1.9rem;
+      line-height: 1;
+    }
+
+    .rune-card h3 {
+      margin: 0 0 4px;
+      font-size: 1rem;
+      color: var(--text);
+    }
+
+    .rune-meta {
+      font-size: .84rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .rune-desc {
+      font-size: .9rem;
+      line-height: 1.45;
+      color: var(--text);
+    }
+
+    .rune-actions {
+      display: grid;
+      gap: 8px;
+      width: 96px;
+    }
+
+    .empty {
+      border: 1px dashed var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      color: var(--muted);
+      text-align: center;
+      background: rgba(34,34,34,.55);
+    }
+
+    .sheet-preview {
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(34,34,34,.75);
+      font-size: .86rem;
+      line-height: 1.45;
+      color: var(--text);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .success {
+      color: var(--ok);
+      font-size: .86rem;
+      min-height: 18px;
+    }
+
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 4px 0;
+    }
+
+    @media (max-width: 1180px) {
+      .layout { grid-template-columns: 1fr; }
       .canvas-box { min-height: 360px; }
     }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <h1>Créateur de Bindrunes</h1>
+    <h1>Créateur de Bindrunes — mode guidé + Google Sheets</h1>
     <p class="lead">
-      Compose jusqu’à 6 runes du Futhark ancien, déplace-les, retourne-les et exporte ta bindrune en PNG.
-      Version originale, en français, prête à être mise en ligne sur un site.
+      Cette version mélange le mini-site de composition et la logique du tableau Google Sheets : tu choisis une intention,
+      le site te propose des runes adaptées, tu peux les ajouter en un clic, les déplacer sur le canevas, puis exporter une ligne prête à coller dans ton Google Sheet.
     </p>
 
-    <div class="grid">
-      <aside class="panel">
-        <h2>Runes</h2>
-        <div class="selectors" id="selectors"></div>
+    <div class="layout">
+      <aside class="stack">
+        <section class="panel">
+          <h2>1) Mode guidé</h2>
+          <div class="stack">
+            <div class="field">
+              <label for="intentionSelect">Intention</label>
+              <select id="intentionSelect"></select>
+            </div>
 
-        <div class="btn-row" style="margin-top:14px;">
-          <button id="flipHorizontal">Retourner H</button>
-          <button id="flipVertical">Retourner V</button>
-        </div>
-        <div class="btn-row">
-          <button id="deleteRune">Supprimer</button>
-          <button id="centerRune">Centrer</button>
-        </div>
-        <div class="btn-row-3">
-          <button id="moveUp">↑</button>
-          <button id="moveLeft">←</button>
-          <button id="moveRight">→</button>
-        </div>
-        <div class="btn-row-3">
-          <div></div>
-          <button id="moveDown">↓</button>
-          <div></div>
-        </div>
-        <div class="btn-row">
-          <button class="btn-accent" id="downloadPng">Exporter PNG</button>
-          <button id="resetCanvas">Reset</button>
-        </div>
+            <div class="field">
+              <label for="searchRune">Recherche rune / mot-clé</label>
+              <input id="searchRune" type="text" placeholder="ex. protection, mémoire, voyage, clarté..." />
+            </div>
 
-        <div class="footer-note">
-          Astuce : sélectionne une rune sur le canevas, puis utilise les touches
-          <span class="kbd">↑</span>
-          <span class="kbd">↓</span>
-          <span class="kbd">←</span>
-          <span class="kbd">→</span>
-          pour l’ajuster finement.
-        </div>
+            <div class="field">
+              <label for="userPhrase">Formulation du besoin</label>
+              <input id="userPhrase" type="text" placeholder="Ex. Je veux me protéger pendant un voyage." />
+            </div>
+
+            <div class="field-inline">
+              <div class="field">
+                <label for="structureSelect">Structure</label>
+                <select id="structureSelect">
+                  <option value="">Auto</option>
+                  <option>hampe centrale</option>
+                  <option>base + sommet</option>
+                  <option>miroir léger</option>
+                  <option>autre</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="supportInput">Support</label>
+                <input id="supportInput" type="text" placeholder="papier, bois, carnet..." />
+              </div>
+            </div>
+
+            <div class="btn-row">
+              <button class="btn-accent" id="applySuggestion">Appliquer la suggestion</button>
+              <button id="clearSuggestion">Vider les slots</button>
+            </div>
+
+            <div class="subtle" id="intentionSummary"></div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>2) Sélection manuelle</h2>
+          <div class="slots" id="slotSelectors"></div>
+          <div class="divider"></div>
+          <div class="btn-row">
+            <button id="fillRecommended">Remplir depuis l’intention</button>
+            <button id="clearAllSlots">Effacer les slots</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>3) Actions canevas</h2>
+          <div class="btn-row" style="margin-top:4px;">
+            <button id="flipHorizontal">Retourner H</button>
+            <button id="flipVertical">Retourner V</button>
+          </div>
+          <div class="btn-row">
+            <button id="deleteRune">Supprimer</button>
+            <button id="centerRune">Centrer</button>
+          </div>
+          <div class="btn-row-3">
+            <button id="bringForward">Monter</button>
+            <button id="moveUp">↑</button>
+            <button id="sendBackward">Descendre</button>
+          </div>
+          <div class="btn-row-3">
+            <button id="moveLeft">←</button>
+            <button id="moveDown">↓</button>
+            <button id="moveRight">→</button>
+          </div>
+          <div class="btn-row">
+            <button class="btn-accent" id="downloadPng">Exporter PNG</button>
+            <button id="resetCanvas">Reset</button>
+          </div>
+          <div class="subtle" style="margin-top:12px;">
+            Astuce : sélectionne une rune sur le canevas puis utilise aussi les touches
+            <span class="kbd">↑</span>
+            <span class="kbd">↓</span>
+            <span class="kbd">←</span>
+            <span class="kbd">→</span>
+            pour l’ajuster finement.
+          </div>
+        </section>
       </aside>
 
       <main class="canvas-wrap">
-        <div class="panel">
-          <h2>Composition</h2>
+        <section class="panel">
+          <h2>Composition visuelle</h2>
           <div class="canvas-box" id="canvas-container">
             <canvas id="runeCanvas"></canvas>
           </div>
-        </div>
-        <div class="panel help">
-          <strong>Conseil de composition :</strong> garde 2 à 4 runes pour une bindrune lisible.
-          Place la rune principale au centre, puis ajoute les runes de soutien. Tu peux superposer,
-          décaler légèrement ou retourner une rune pour équilibrer la forme.
-        </div>
+        </section>
+
+        <section class="panel">
+          <h2>Runes conseillées pour débuter</h2>
+          <div class="suggestions" id="suggestions"></div>
+        </section>
       </main>
+
+      <aside class="stack">
+        <section class="panel">
+          <h2>Fiche de composition</h2>
+          <div class="stack">
+            <div>
+              <span class="badge" id="badgeIntention">Intention : —</span>
+              <span class="badge" id="badgeStructure">Structure : —</span>
+            </div>
+            <div class="subtle" id="selectedRunesText">Aucune rune sélectionnée.</div>
+            <div class="subtle" id="meaningText">Choisis une intention ou ajoute une rune pour voir les explications.</div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Export vers Google Sheets</h2>
+          <div class="stack">
+            <div class="subtle">
+              Le bouton ci-dessous copie une ligne tabulée prête à coller dans un Google Sheet.
+              Colonnes : date, intention, formulation, structure, support, runes, glyphes, lecture.
+            </div>
+            <button class="btn-accent" id="copySheetRow">Copier la ligne Sheets</button>
+            <div class="success" id="copyStatus"></div>
+            <div class="sheet-preview" id="sheetPreview"></div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Repères simples</h2>
+          <div class="subtle">
+            <p><strong>Pour débuter :</strong> garde 2 à 4 runes.</p>
+            <p><strong>Ordre recommandé :</strong> 1 rune principale, 1 soutien, 1 soutien secondaire, 1 protection / stabilisation.</p>
+            <p><strong>Conseil :</strong> garde la rune principale la plus visible au centre.</p>
+            <p><strong>Rappel :</strong> les significations ici sont données dans un cadre pratique moderne.</p>
+          </div>
+        </section>
+      </aside>
     </div>
   </div>
 
   <script>
     const RUNES = [
-      { name: 'Aucune', char: '' },
-      { name: 'Fehu', char: 'ᚠ' },
-      { name: 'Uruz', char: 'ᚢ' },
-      { name: 'Thurisaz', char: 'ᚦ' },
-      { name: 'Ansuz', char: 'ᚨ' },
-      { name: 'Raidho', char: 'ᚱ' },
-      { name: 'Kenaz', char: 'ᚲ' },
-      { name: 'Gebo', char: 'ᚷ' },
-      { name: 'Wunjo', char: 'ᚹ' },
-      { name: 'Hagalaz', char: 'ᚺ' },
-      { name: 'Nauthiz', char: 'ᚾ' },
-      { name: 'Isa', char: 'ᛁ' },
-      { name: 'Jera', char: 'ᛃ' },
-      { name: 'Eihwaz', char: 'ᛇ' },
-      { name: 'Perthro', char: 'ᛈ' },
-      { name: 'Algiz', char: 'ᛉ' },
-      { name: 'Sowilo', char: 'ᛊ' },
-      { name: 'Tiwaz', char: 'ᛏ' },
-      { name: 'Berkano', char: 'ᛒ' },
-      { name: 'Ehwaz', char: 'ᛖ' },
-      { name: 'Mannaz', char: 'ᛗ' },
-      { name: 'Laguz', char: 'ᛚ' },
-      { name: 'Ingwaz', char: 'ᛜ' },
-      { name: 'Dagaz', char: 'ᛞ' },
-      { name: 'Othala', char: 'ᛟ' }
+      { name: 'Fehu', char: 'ᚠ', sound: 'f', aett: 1, meanings: 'richesse mobile, énergie, circulation', usage: 'argent, ressources, démarrage', intents: ['prospérité'] },
+      { name: 'Uruz', char: 'ᚢ', sound: 'u', aett: 1, meanings: 'force vitale, endurance, puissance brute', usage: 'santé, courage, reconstruction', intents: ['guérison', 'ancrage'] },
+      { name: 'Thurisaz', char: 'ᚦ', sound: 'th', aett: 1, meanings: 'défense, seuil, force réactive', usage: 'protection, couper une nuisance', intents: ['protection'] },
+      { name: 'Ansuz', char: 'ᚨ', sound: 'a', aett: 1, meanings: 'parole, souffle, inspiration, message', usage: 'communication, étude, guidance', intents: ['mémoire'] },
+      { name: 'Raidho', char: 'ᚱ', sound: 'r', aett: 1, meanings: 'route, mouvement juste, rythme', usage: 'voyage, progression, bon timing', intents: ['voyage'] },
+      { name: 'Kenaz', char: 'ᚲ', sound: 'k', aett: 1, meanings: 'torche, clarté, savoir-faire, révélation', usage: 'apprentissage, créativité, guérison ciblée', intents: ['guérison', 'mémoire'] },
+      { name: 'Gebo', char: 'ᚷ', sound: 'g', aett: 1, meanings: 'don, échange, équilibre relationnel', usage: 'alliances, contrats, réciprocité', intents: ['prospérité'] },
+      { name: 'Wunjo', char: 'ᚹ', sound: 'w / v', aett: 1, meanings: 'joie, harmonie, cohésion', usage: 'apaisement, ambiance, réussite fluide', intents: ['prospérité', 'guérison'] },
+      { name: 'Hagalaz', char: 'ᚺ', sound: 'h', aett: 2, meanings: 'disruption, changement, nettoyage', usage: 'casser une stagnation', intents: [] },
+      { name: 'Nauthiz', char: 'ᚾ', sound: 'n', aett: 2, meanings: 'nécessité, contrainte, discipline', usage: 'tenir bon, patience, survie', intents: ['ancrage'] },
+      { name: 'Isa', char: 'ᛁ', sound: 'i', aett: 2, meanings: 'glace, arrêt, concentration, fixation', usage: 'stabiliser, ralentir, figer un excès', intents: ['ancrage', 'mémoire'] },
+      { name: 'Jera', char: 'ᛃ', sound: 'j / y', aett: 2, meanings: 'cycle, récolte, saison juste', usage: 'prospérité durable, résultats, patience', intents: ['prospérité'] },
+      { name: 'Eihwaz', char: 'ᛇ', sound: 'ï / ei / y', aett: 2, meanings: 'axe, endurance, protection profonde', usage: 'ancrage, passage difficile, résistance', intents: ['protection', 'ancrage'] },
+      { name: 'Perthro', char: 'ᛈ', sound: 'p', aett: 2, meanings: 'mystère, potentiel caché, matrice', usage: 'intuition, déblocage', intents: [] },
+      { name: 'Algiz', char: 'ᛉ', sound: 'z / ʀ', aett: 2, meanings: 'protection, vigilance, lien au sacré', usage: 'bouclier, sécurité, limites saines', intents: ['protection', 'voyage'] },
+      { name: 'Sowilo', char: 'ᛊ', sound: 's', aett: 2, meanings: 'soleil, succès, vitalité, direction', usage: 'énergie, clarté, victoire', intents: ['prospérité', 'guérison'] },
+      { name: 'Tiwaz', char: 'ᛏ', sound: 't', aett: 3, meanings: 'justice, honneur, décision, droiture', usage: 'leadership, arbitrage, courage moral', intents: ['protection'] },
+      { name: 'Berkano', char: 'ᛒ', sound: 'b', aett: 3, meanings: 'croissance, soin, naissance', usage: 'guérison, douceur, nouveau départ', intents: ['guérison'] },
+      { name: 'Ehwaz', char: 'ᛖ', sound: 'e', aett: 3, meanings: 'confiance, coopération, avancée', usage: 'partenariat, déplacement, fluidité', intents: ['voyage'] },
+      { name: 'Mannaz', char: 'ᛗ', sound: 'm', aett: 3, meanings: 'humain, conscience, esprit, communauté', usage: 'mémoire, identité, relations', intents: ['mémoire'] },
+      { name: 'Laguz', char: 'ᛚ', sound: 'l', aett: 3, meanings: 'eau, flux, intuition, adaptation', usage: 'émotions, voyage fluide, rêves', intents: ['voyage'] },
+      { name: 'Ingwaz', char: 'ᛜ', sound: 'ng', aett: 3, meanings: 'gestation, réserve, maturation interne', usage: 'préparation, recentrage, intériorité', intents: ['ancrage'] },
+      { name: 'Dagaz', char: 'ᛞ', sound: 'd', aett: 3, meanings: 'jour, bascule, éveil, transformation claire', usage: 'percée, renouveau, déclic', intents: ['mémoire', 'guérison'] },
+      { name: 'Othala', char: 'ᛟ', sound: 'o', aett: 3, meanings: 'héritage, maison, terre, appartenance', usage: 'foyer, lignage, enracinement', intents: ['ancrage', 'prospérité'] },
     ];
 
-    const selectorsHost = document.getElementById('selectors');
+    const INTENTIONS = {
+      'Protection': {
+        runes: ['Algiz', 'Thurisaz', 'Eihwaz', 'Tiwaz'],
+        logic: 'Bouclier, défense active, endurance et tenue morale.',
+        structure: 'hampe centrale'
+      },
+      'Prospérité': {
+        runes: ['Fehu', 'Jera', 'Othala', 'Sowilo'],
+        logic: 'Flux de ressources, récolte, stabilité et élan.',
+        structure: 'base + sommet'
+      },
+      'Guérison': {
+        runes: ['Berkano', 'Uruz', 'Kenaz', 'Sowilo'],
+        logic: 'Soin, force vitale, chaleur réparatrice et énergie.',
+        structure: 'hampe centrale'
+      },
+      'Ancrage': {
+        runes: ['Othala', 'Eihwaz', 'Isa', 'Ingwaz'],
+        logic: 'Racines, axe intérieur, stabilisation et recentrage.',
+        structure: 'base + sommet'
+      },
+      'Voyage': {
+        runes: ['Raidho', 'Ehwaz', 'Algiz', 'Laguz'],
+        logic: 'Route juste, déplacement fluide, protection et adaptation.',
+        structure: 'hampe centrale'
+      },
+      'Mémoire': {
+        runes: ['Mannaz', 'Ansuz', 'Kenaz', 'Isa'],
+        logic: 'Esprit, langage, clarté et concentration.',
+        structure: 'miroir léger'
+      }
+    };
+
+    const SLOT_LABELS = ['Principale', 'Soutien 1', 'Soutien 2', 'Protection / stabilisation'];
+    const selectorsHost = document.getElementById('slotSelectors');
+    const suggestionsHost = document.getElementById('suggestions');
+    const intentionSelect = document.getElementById('intentionSelect');
+    const structureSelect = document.getElementById('structureSelect');
+    const searchRune = document.getElementById('searchRune');
+    const userPhrase = document.getElementById('userPhrase');
+    const supportInput = document.getElementById('supportInput');
+    const intentionSummary = document.getElementById('intentionSummary');
+    const badgeIntention = document.getElementById('badgeIntention');
+    const badgeStructure = document.getElementById('badgeStructure');
+    const selectedRunesText = document.getElementById('selectedRunesText');
+    const meaningText = document.getElementById('meaningText');
+    const sheetPreview = document.getElementById('sheetPreview');
+    const copyStatus = document.getElementById('copyStatus');
+
     const canvasContainer = document.getElementById('canvas-container');
     const canvas = new fabric.Canvas('runeCanvas', {
       backgroundColor: '#f5f0e8',
@@ -242,7 +542,12 @@
     });
 
     const runeObjects = {};
+    const slotValues = new Array(4).fill('');
     const moveIncrement = 2;
+
+    function getRuneByName(name) {
+      return RUNES.find(r => r.name === name);
+    }
 
     function resizeCanvas() {
       const size = canvasContainer.clientWidth;
@@ -251,47 +556,179 @@
       canvas.renderAll();
     }
 
-    function createSelectors() {
-      for (let i = 1; i <= 6; i++) {
-        const field = document.createElement('div');
-        field.className = 'field';
-        const label = document.createElement('label');
-        label.htmlFor = `rune${i}`;
-        label.textContent = `Rune ${i}`;
-        const select = document.createElement('select');
-        select.id = `rune${i}`;
-        select.dataset.slot = `rune${i}`;
-        RUNES.forEach(rune => {
-          const opt = document.createElement('option');
-          opt.value = rune.char;
-          opt.textContent = rune.char ? `${rune.name} ${rune.char}` : rune.name;
-          select.appendChild(opt);
-        });
-        select.addEventListener('change', handleRuneSelection);
-        field.appendChild(label);
-        field.appendChild(select);
-        selectorsHost.appendChild(field);
-      }
+    function initIntentionSelect() {
+      intentionSelect.innerHTML = '<option value="">Choisir une intention</option>';
+      Object.keys(INTENTIONS).forEach(key => {
+        const opt = document.createElement('option');
+        opt.value = key;
+        opt.textContent = key;
+        intentionSelect.appendChild(opt);
+      });
     }
 
-    function handleRuneSelection(e) {
-      const slotId = e.target.dataset.slot;
-      const char = e.target.value;
-      if (runeObjects[slotId]) {
-        canvas.remove(runeObjects[slotId]);
-        delete runeObjects[slotId];
+    function createSlotSelectors() {
+      selectorsHost.innerHTML = '';
+      SLOT_LABELS.forEach((labelText, index) => {
+        const field = document.createElement('div');
+        field.className = 'field';
+
+        const label = document.createElement('label');
+        label.textContent = labelText;
+
+        const row = document.createElement('div');
+        row.className = 'slot-row';
+
+        const select = document.createElement('select');
+        select.id = `slot-${index}`;
+        select.dataset.index = index;
+        select.innerHTML = '<option value="">Aucune</option>' + RUNES.map(r => `<option value="${r.name}">${r.name} ${r.char}</option>`).join('');
+        select.addEventListener('change', (e) => {
+          const idx = Number(e.target.dataset.index);
+          setSlotRune(idx, e.target.value);
+        });
+
+        const tag = document.createElement('div');
+        tag.className = 'slot-tag';
+        tag.textContent = `Slot ${index + 1}`;
+
+        row.appendChild(select);
+        row.appendChild(tag);
+        field.appendChild(label);
+        field.appendChild(row);
+        selectorsHost.appendChild(field);
+      });
+    }
+
+    function nextEmptySlot() {
+      return slotValues.findIndex(v => !v);
+    }
+
+    function renderSuggestions() {
+      suggestionsHost.innerHTML = '';
+      const intention = intentionSelect.value;
+      const query = searchRune.value.trim().toLowerCase();
+
+      let list = [];
+      if (intention && INTENTIONS[intention]) {
+        list = INTENTIONS[intention].runes.map(name => getRuneByName(name)).filter(Boolean);
+      } else {
+        list = [...RUNES];
       }
-      if (!char) {
-        canvas.renderAll();
+
+      if (query) {
+        list = RUNES.filter(r => {
+          const hay = `${r.name} ${r.char} ${r.meanings} ${r.usage} ${(r.intents || []).join(' ')}`.toLowerCase();
+          return hay.includes(query);
+        });
+      }
+
+      if (!list.length) {
+        suggestionsHost.innerHTML = '<div class="empty">Aucune rune trouvée pour cette recherche.</div>';
         return;
       }
 
-      const text = new fabric.Text(char, {
-        left: canvas.getWidth() / 2,
-        top: canvas.getHeight() / 2,
+      list.forEach((rune, idx) => {
+        const card = document.createElement('div');
+        card.className = 'rune-card';
+        card.innerHTML = `
+          <div class="rune-glyph">${rune.char}</div>
+          <div>
+            <h3>${rune.name}</h3>
+            <div class="rune-meta">Ætt ${rune.aett} · son ${rune.sound}</div>
+            <div class="rune-desc"><strong>Sens :</strong> ${rune.meanings}<br><strong>Usages :</strong> ${rune.usage}</div>
+          </div>
+          <div class="rune-actions">
+            <button class="btn-soft" data-add="${rune.name}">Ajouter</button>
+            <button data-main="${rune.name}">Mettre en 1</button>
+          </div>
+        `;
+        suggestionsHost.appendChild(card);
+      });
+
+      suggestionsHost.querySelectorAll('[data-add]').forEach(btn => {
+        btn.addEventListener('click', () => addRuneToNextSlot(btn.dataset.add));
+      });
+      suggestionsHost.querySelectorAll('[data-main]').forEach(btn => {
+        btn.addEventListener('click', () => setSlotRune(0, btn.dataset.main));
+      });
+    }
+
+    function getRecommendedNames() {
+      const intention = intentionSelect.value;
+      return intention && INTENTIONS[intention] ? INTENTIONS[intention].runes.slice(0, 4) : [];
+    }
+
+    function applyIntentionText() {
+      const intention = intentionSelect.value;
+      if (!intention || !INTENTIONS[intention]) {
+        intentionSummary.textContent = 'Choisis une intention pour recevoir une proposition guidée.';
+        badgeIntention.textContent = 'Intention : —';
+        if (!structureSelect.value) badgeStructure.textContent = 'Structure : —';
+        return;
+      }
+      const info = INTENTIONS[intention];
+      intentionSummary.innerHTML = `<strong>Suggestion :</strong> ${info.logic}<br><strong>Structure conseillée :</strong> ${info.structure}`;
+      badgeIntention.textContent = `Intention : ${intention}`;
+      if (!structureSelect.value) {
+        badgeStructure.textContent = `Structure : ${info.structure}`;
+      }
+    }
+
+    function setSlotRune(index, runeName) {
+      slotValues[index] = runeName || '';
+      const select = document.getElementById(`slot-${index}`);
+      if (select && select.value !== runeName) select.value = runeName || '';
+      syncCanvasFromSlots();
+      updateSummary();
+    }
+
+    function addRuneToNextSlot(name) {
+      const idx = nextEmptySlot();
+      if (idx === -1) {
+        setSlotRune(3, name);
+        return;
+      }
+      setSlotRune(idx, name);
+    }
+
+    function fillRecommended() {
+      const names = getRecommendedNames();
+      SLOT_LABELS.forEach((_, i) => setSlotRune(i, names[i] || ''));
+      if (!structureSelect.value && intentionSelect.value) {
+        structureSelect.value = INTENTIONS[intentionSelect.value].structure;
+      }
+      updateSummary();
+    }
+
+    function clearSlots() {
+      SLOT_LABELS.forEach((_, i) => setSlotRune(i, ''));
+      updateSummary();
+    }
+
+    function runeObjectForSlot(slotId) {
+      return runeObjects[slotId] || null;
+    }
+
+    function defaultPlacement(index) {
+      const w = canvas.getWidth();
+      const h = canvas.getHeight();
+      const placements = [
+        { left: w / 2, top: h / 2 },
+        { left: w / 2 - w * 0.05, top: h / 2 },
+        { left: w / 2 + w * 0.05, top: h / 2 },
+        { left: w / 2, top: h / 2 - h * 0.06 },
+      ];
+      return placements[index] || { left: w / 2, top: h / 2 };
+    }
+
+    function createRuneObject(rune, slotIndex) {
+      const pos = defaultPlacement(slotIndex);
+      const text = new fabric.Text(rune.char, {
+        left: pos.left,
+        top: pos.top,
         originX: 'center',
         originY: 'center',
-        fontSize: canvas.getWidth() * 0.34,
+        fontSize: canvas.getWidth() * (slotIndex === 0 ? 0.34 : 0.28),
         fontFamily: 'serif',
         fill: '#111111',
         stroke: '#111111',
@@ -299,13 +736,41 @@
         cornerColor: '#d6a85f',
         borderColor: '#d6a85f',
         transparentCorners: false,
-        slotId
+        slotId: `slot-${slotIndex}`,
+        runeName: rune.name
       });
-
       canvas.add(text);
-      canvas.setActiveObject(text);
-      runeObjects[slotId] = text;
+      runeObjects[`slot-${slotIndex}`] = text;
+      return text;
+    }
+
+    function syncCanvasFromSlots() {
+      SLOT_LABELS.forEach((_, index) => {
+        const key = `slot-${index}`;
+        const runeName = slotValues[index];
+        const obj = runeObjectForSlot(key);
+        if (!runeName) {
+          if (obj) {
+            canvas.remove(obj);
+            delete runeObjects[key];
+          }
+          return;
+        }
+
+        const rune = getRuneByName(runeName);
+        if (!rune) return;
+
+        if (!obj) {
+          createRuneObject(rune, index);
+        } else {
+          obj.set({
+            text: rune.char,
+            runeName: rune.name
+          });
+        }
+      });
       canvas.renderAll();
+      updateSheetPreview();
     }
 
     function getActive() {
@@ -317,6 +782,88 @@
       if (!obj) return;
       obj.set({ left: obj.left + dx, top: obj.top + dy });
       canvas.renderAll();
+    }
+
+    function selectedRunesData() {
+      return slotValues.map(name => getRuneByName(name)).filter(Boolean);
+    }
+
+    function updateSummary() {
+      const selected = selectedRunesData();
+      const intention = intentionSelect.value;
+      const structure = structureSelect.value || (intention && INTENTIONS[intention] ? INTENTIONS[intention].structure : '—');
+      badgeIntention.textContent = `Intention : ${intention || '—'}`;
+      badgeStructure.textContent = `Structure : ${structure || '—'}`;
+
+      if (!selected.length) {
+        selectedRunesText.textContent = 'Aucune rune sélectionnée.';
+        meaningText.textContent = 'Choisis une intention ou ajoute une rune pour voir les explications.';
+        updateSheetPreview();
+        return;
+      }
+
+      selectedRunesText.innerHTML = selected.map(r => `${r.name} ${r.char}`).join(' · ');
+      meaningText.innerHTML = selected.map(r => `<strong>${r.name}</strong> : ${r.meanings}`).join('<br>');
+      updateSheetPreview();
+    }
+
+    function getReadingText() {
+      const selected = selectedRunesData();
+      if (!selected.length) return '';
+      return selected.map(r => `${r.name}: ${r.meanings}`).join(' | ');
+    }
+
+    function getGlyphString() {
+      return selectedRunesData().map(r => r.char).join(' ');
+    }
+
+    function buildSheetRowArray() {
+      const now = new Date().toISOString();
+      const intention = intentionSelect.value || '';
+      const structure = structureSelect.value || (intention && INTENTIONS[intention] ? INTENTIONS[intention].structure : '');
+      const selected = selectedRunesData();
+      const names = selected.map(r => r.name).join(' + ');
+      const glyphs = selected.map(r => r.char).join(' ');
+      const reading = getReadingText();
+      return [
+        now,
+        intention,
+        userPhrase.value || '',
+        structure,
+        supportInput.value || '',
+        names,
+        glyphs,
+        reading
+      ];
+    }
+
+    function updateSheetPreview() {
+      const row = buildSheetRowArray();
+      sheetPreview.textContent = row.join('\t');
+    }
+
+    async function copySheetRow() {
+      const text = buildSheetRowArray().join('\t');
+      try {
+        await navigator.clipboard.writeText(text);
+        copyStatus.textContent = 'Ligne copiée. Tu peux la coller directement dans Google Sheets.';
+      } catch (e) {
+        copyStatus.textContent = 'Copie auto indisponible ici. Sélectionne le texte dans l’aperçu et copie-le manuellement.';
+      }
+      updateSheetPreview();
+      setTimeout(() => {
+        copyStatus.textContent = '';
+      }, 2800);
+    }
+
+    function resetCanvasAndState() {
+      canvas.clear();
+      canvas.backgroundColor = '#f5f0e8';
+      Object.keys(runeObjects).forEach(k => delete runeObjects[k]);
+      slotValues.fill('');
+      document.querySelectorAll('#slotSelectors select').forEach(s => s.value = '');
+      resizeCanvas();
+      updateSummary();
     }
 
     document.getElementById('flipHorizontal').addEventListener('click', () => {
@@ -337,12 +884,15 @@
       const obj = getActive();
       if (!obj) return;
       if (obj.slotId) {
-        const select = document.querySelector(`[data-slot="${obj.slotId}"]`);
-        if (select) select.selectedIndex = 0;
+        const idx = Number(obj.slotId.replace('slot-', ''));
+        slotValues[idx] = '';
+        const select = document.getElementById(`slot-${idx}`);
+        if (select) select.value = '';
         delete runeObjects[obj.slotId];
       }
       canvas.remove(obj);
       canvas.renderAll();
+      updateSummary();
     });
 
     document.getElementById('centerRune').addEventListener('click', () => {
@@ -352,18 +902,24 @@
       canvas.renderAll();
     });
 
+    document.getElementById('bringForward').addEventListener('click', () => {
+      const obj = getActive();
+      if (!obj) return;
+      canvas.bringForward(obj);
+      canvas.renderAll();
+    });
+
+    document.getElementById('sendBackward').addEventListener('click', () => {
+      const obj = getActive();
+      if (!obj) return;
+      canvas.sendBackwards(obj);
+      canvas.renderAll();
+    });
+
     document.getElementById('moveUp').addEventListener('click', () => moveActive(0, -moveIncrement));
     document.getElementById('moveDown').addEventListener('click', () => moveActive(0, moveIncrement));
     document.getElementById('moveLeft').addEventListener('click', () => moveActive(-moveIncrement, 0));
     document.getElementById('moveRight').addEventListener('click', () => moveActive(moveIncrement, 0));
-
-    document.getElementById('resetCanvas').addEventListener('click', () => {
-      canvas.clear();
-      canvas.backgroundColor = '#f5f0e8';
-      Object.keys(runeObjects).forEach(k => delete runeObjects[k]);
-      document.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
-      resizeCanvas();
-    });
 
     document.getElementById('downloadPng').addEventListener('click', () => {
       canvas.discardActiveObject();
@@ -374,6 +930,24 @@
       a.download = 'bindrune.png';
       a.click();
     });
+
+    document.getElementById('resetCanvas').addEventListener('click', resetCanvasAndState);
+    document.getElementById('applySuggestion').addEventListener('click', fillRecommended);
+    document.getElementById('fillRecommended').addEventListener('click', fillRecommended);
+    document.getElementById('clearSuggestion').addEventListener('click', clearSlots);
+    document.getElementById('clearAllSlots').addEventListener('click', clearSlots);
+    document.getElementById('copySheetRow').addEventListener('click', copySheetRow);
+
+    intentionSelect.addEventListener('change', () => {
+      applyIntentionText();
+      renderSuggestions();
+      updateSummary();
+    });
+
+    structureSelect.addEventListener('change', updateSummary);
+    userPhrase.addEventListener('input', updateSheetPreview);
+    supportInput.addEventListener('input', updateSheetPreview);
+    searchRune.addEventListener('input', renderSuggestions);
 
     document.addEventListener('keydown', (event) => {
       const obj = getActive();
@@ -386,8 +960,12 @@
       }
     });
 
-    createSelectors();
+    initIntentionSelect();
+    createSlotSelectors();
     resizeCanvas();
+    renderSuggestions();
+    applyIntentionText();
+    updateSummary();
     window.addEventListener('resize', resizeCanvas);
   </script>
 </body>
