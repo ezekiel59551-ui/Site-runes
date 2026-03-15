@@ -143,6 +143,40 @@
       box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
     }
 
+    select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background:
+        linear-gradient(180deg, #261d15, #1d1611),
+        linear-gradient(45deg, transparent 50%, var(--accent-2) 50%),
+        linear-gradient(135deg, var(--accent-2) 50%, transparent 50%);
+      background-repeat: no-repeat;
+      background-position:
+        0 0,
+        calc(100% - 18px) 50%,
+        calc(100% - 12px) 50%;
+      background-size:
+        100% 100%,
+        6px 6px,
+        6px 6px;
+      padding-right: 34px;
+    }
+
+    select option,
+    select optgroup {
+      background: #17110d;
+      color: #f4ead8;
+    }
+
+    select:focus,
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(201,163,95,.18), inset 0 1px 0 rgba(255,255,255,.03);
+    }
+
     textarea {
       min-height: 92px;
       resize: vertical;
@@ -385,7 +419,8 @@
   <div class="wrap">
     <h1>Créateur de Bindrunes — Atelier ésotérique</h1>
     <p class="lead">
-      Cette version mélange l’atelier de composition et la logique du tableau Google Sheets : tu choisis une intention, le site te propose des runes adaptées, tu les assembles sur un parchemin numérique, puis tu exportes une ligne prête à coller dans ton Google Sheet.
+      Cette version mélange l’atelier de composition et une logique guidée très simple : tu choisis une intention,
+      le site te propose des runes adaptées, puis tu les assembles sur un parchemin numérique.
     </p>
 
     <div class="layout">
@@ -398,15 +433,9 @@
               <select id="intentionSelect"></select>
             </div>
 
-            <div class="field">
-              <label for="searchRune">Recherche rune / mot-clé</label>
-              <input id="searchRune" type="text" placeholder="ex. protection, mémoire, voyage, clarté..." />
-            </div>
+            
 
-            <div class="field">
-              <label for="userPhrase">Formulation du besoin</label>
-              <input id="userPhrase" type="text" placeholder="Ex. Je veux me protéger pendant un voyage." />
-            </div>
+            
 
             <div class="field-inline">
               <div class="field">
@@ -506,18 +535,7 @@
           </div>
         </section>
 
-        <section class="panel">
-          <h2>Transcription vers Google Sheets</h2>
-          <div class="stack">
-            <div class="subtle">
-              Le bouton ci-dessous copie une ligne tabulée prête à coller dans un Google Sheet.
-              Colonnes : date, intention, formulation, structure, support, runes, glyphes, lecture.
-            </div>
-            <button class="btn-accent" id="copySheetRow">Copier la ligne Sheets</button>
-            <div class="success" id="copyStatus"></div>
-            <div class="sheet-preview" id="sheetPreview"></div>
-          </div>
-        </section>
+        
 
         <section class="panel">
           <h2>Conseils du grimoire</h2>
@@ -598,17 +616,13 @@
     const suggestionsHost = document.getElementById('suggestions');
     const intentionSelect = document.getElementById('intentionSelect');
     const structureSelect = document.getElementById('structureSelect');
-    const searchRune = document.getElementById('searchRune');
-    const userPhrase = document.getElementById('userPhrase');
-    const supportInput = document.getElementById('supportInput');
+            const supportInput = document.getElementById('supportInput');
     const intentionSummary = document.getElementById('intentionSummary');
     const badgeIntention = document.getElementById('badgeIntention');
     const badgeStructure = document.getElementById('badgeStructure');
     const selectedRunesText = document.getElementById('selectedRunesText');
     const meaningText = document.getElementById('meaningText');
-    const sheetPreview = document.getElementById('sheetPreview');
-    const copyStatus = document.getElementById('copyStatus');
-
+        
     const canvasContainer = document.getElementById('canvas-container');
     const canvas = new fabric.Canvas('runeCanvas', {
       backgroundColor: '#f5f0e8',
@@ -680,20 +694,12 @@
     function renderSuggestions() {
       suggestionsHost.innerHTML = '';
       const intention = intentionSelect.value;
-      const query = searchRune.value.trim().toLowerCase();
 
       let list = [];
       if (intention && INTENTIONS[intention]) {
         list = INTENTIONS[intention].runes.map(name => getRuneByName(name)).filter(Boolean);
       } else {
         list = [...RUNES];
-      }
-
-      if (query) {
-        list = RUNES.filter(r => {
-          const hay = `${r.name} ${r.char} ${r.meanings} ${r.usage} ${(r.intents || []).join(' ')}`.toLowerCase();
-          return hay.includes(query);
-        });
       }
 
       if (!list.length) {
@@ -844,7 +850,6 @@
         }
       });
       canvas.renderAll();
-      updateSheetPreview();
     }
 
     function getActive() {
@@ -890,40 +895,6 @@
     function getGlyphString() {
       return selectedRunesData().map(r => r.char).join(' ');
     }
-
-    function buildSheetRowArray() {
-      const now = new Date().toISOString();
-      const intention = intentionSelect.value || '';
-      const structure = structureSelect.value || (intention && INTENTIONS[intention] ? INTENTIONS[intention].structure : '');
-      const selected = selectedRunesData();
-      const names = selected.map(r => r.name).join(' + ');
-      const glyphs = selected.map(r => r.char).join(' ');
-      const reading = getReadingText();
-      return [
-        now,
-        intention,
-        userPhrase.value || '',
-        structure,
-        supportInput.value || '',
-        names,
-        glyphs,
-        reading
-      ];
-    }
-
-    function updateSheetPreview() {
-      const row = buildSheetRowArray();
-      sheetPreview.textContent = row.join('\t');
-    }
-
-    async function copySheetRow() {
-      const text = buildSheetRowArray().join('\t');
-      try {
-        await navigator.clipboard.writeText(text);
-        copyStatus.textContent = 'Ligne copiée. Tu peux la coller directement dans Google Sheets.';
-      } catch (e) {
-        copyStatus.textContent = 'Copie auto indisponible ici. Sélectionne le texte dans l’aperçu et copie-le manuellement.';
-      }
       updateSheetPreview();
       setTimeout(() => {
         copyStatus.textContent = '';
@@ -1010,7 +981,6 @@
     document.getElementById('fillRecommended').addEventListener('click', fillRecommended);
     document.getElementById('clearSuggestion').addEventListener('click', clearSlots);
     document.getElementById('clearAllSlots').addEventListener('click', clearSlots);
-    document.getElementById('copySheetRow').addEventListener('click', copySheetRow);
 
     intentionSelect.addEventListener('change', () => {
       applyIntentionText();
@@ -1019,9 +989,6 @@
     });
 
     structureSelect.addEventListener('change', updateSummary);
-    userPhrase.addEventListener('input', updateSheetPreview);
-    supportInput.addEventListener('input', updateSheetPreview);
-    searchRune.addEventListener('input', renderSuggestions);
 
     document.addEventListener('keydown', (event) => {
       const obj = getActive();
