@@ -3,20 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Apprentissage de runes</title>
+  <title>Créateur de Bindrunes — Atelier ésotérique</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
   <style>
     :root {
-      --bg: #20160f;
-      --panel: rgba(84, 63, 41, 0.78);
-      --panel-2: rgba(120, 92, 59, 0.22);
       --text: #2f2014;
       --text-light: #f6ead2;
       --muted: #6f5437;
       --accent: #b8893c;
       --accent-2: #e2c98a;
       --border: #8a6a3e;
-      --border-soft: #9b7a49;
       --parchment: #efe0b8;
       --parchment-2: #e2c993;
       --shadow: rgba(42, 24, 10, 0.35);
@@ -118,10 +114,7 @@
       text-transform: uppercase;
     }
 
-    .field {
-      display: grid;
-      gap: 6px;
-    }
+    .field { display: grid; gap: 6px; }
 
     label {
       font-size: .86rem;
@@ -185,22 +178,9 @@
       color: #6a451b;
     }
 
-    .btn-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .btn-row-3 {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
-
-    .slots {
-      display: grid;
-      gap: 8px;
-    }
+    .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .btn-row-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .slots { display: grid; gap: 8px; }
 
     .slot-row {
       display: grid;
@@ -244,15 +224,12 @@
       margin: 4px 0;
     }
 
-    .canvas-wrap {
-      display: grid;
-      gap: 18px;
-    }
+    .canvas-wrap { display: grid; gap: 18px; }
 
     .canvas-box {
       background:
         radial-gradient(circle at 30% 20%, rgba(255,255,255,0.25), transparent 22%),
-        linear-gradient(180deg, var(--parchment), var(--parchment-2));
+        linear-gradient(180deg, var(--canvas-paper-1, var(--parchment)), var(--canvas-paper-2, var(--parchment-2)));
       border-radius: 22px;
       border: 2px solid #8a6a3e;
       overflow: hidden;
@@ -260,6 +237,7 @@
       min-height: 430px;
       box-shadow: inset 0 0 40px rgba(122, 81, 31, 0.18);
       position: relative;
+      transition: background .35s ease, box-shadow .35s ease, border-color .35s ease;
     }
 
     .canvas-box::before {
@@ -288,12 +266,9 @@
       height: 100%;
     }
 
-    .suggestions {
-      display: grid;
-      gap: 10px;
-    }
+    .suggestions { display: grid; gap: 10px; }
 
-    .rune-card {
+    .rune-card, .library-card {
       display: grid;
       grid-template-columns: 52px 1fr auto;
       gap: 10px;
@@ -305,7 +280,11 @@
       box-shadow: inset 0 1px 0 rgba(255,255,255,.3);
     }
 
-    .rune-glyph {
+    .library-card {
+      grid-template-columns: 60px 1fr;
+    }
+
+    .rune-glyph, .library-glyph {
       display: grid;
       place-items: center;
       width: 52px;
@@ -319,30 +298,33 @@
       box-shadow: inset 0 1px 0 rgba(255,255,255,.35);
     }
 
-    .rune-card h3 {
+    .library-glyph {
+      width: 60px;
+      height: 60px;
+      font-size: 2rem;
+      border-radius: 14px;
+    }
+
+    .rune-card h3, .library-card h3 {
       margin: 0 0 4px;
       font-size: .98rem;
       color: #5b3918;
     }
 
-    .rune-meta {
+    .rune-meta, .library-meta {
       font-size: .82rem;
       color: #7a5a3b;
       margin-bottom: 6px;
       font-style: italic;
     }
 
-    .rune-desc {
+    .rune-desc, .library-desc {
       font-size: .88rem;
       line-height: 1.45;
       color: #4c3420;
     }
 
-    .rune-actions {
-      display: grid;
-      gap: 6px;
-      width: 84px;
-    }
+    .rune-actions { display: grid; gap: 6px; width: 84px; }
 
     .kbd {
       display: inline-block;
@@ -355,9 +337,108 @@
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.3);
     }
 
+    .library-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(18, 11, 7, 0.72);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      z-index: 50;
+      backdrop-filter: blur(4px);
+    }
+
+    .library-overlay.open { display: flex; }
+
+    .library-modal {
+      width: min(1180px, 100%);
+      max-height: 88vh;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(246, 231, 196, 0.98), rgba(227, 204, 153, 0.96));
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: 0 24px 60px rgba(0,0,0,.38);
+      color: var(--text);
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .library-header {
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid rgba(138,106,62,.45);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .library-title {
+      margin: 0;
+      color: #6e4518;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    .library-content {
+      overflow: auto;
+      padding: 18px 20px 22px;
+    }
+
+    .library-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      align-items: start;
+    }
+
+    .library-section {
+      grid-column: 1 / -1;
+      margin-top: 8px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.08),
+        0 4px 12px rgba(42, 24, 10, 0.18);
+    }
+
+    .library-section-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #f8e8c2;
+      letter-spacing: .03em;
+      margin-bottom: 4px;
+    }
+
+    .library-section-intro {
+      font-size: .9rem;
+      color: #f0dfbc;
+      line-height: 1.5;
+    }
+
+    .aett-freyr {
+      border: 1px solid #6f5a23;
+      background: linear-gradient(180deg, #7e6726, #5f4a18);
+    }
+
+    .aett-heimdall {
+      border: 1px solid #5f4b33;
+      background: linear-gradient(180deg, #6c5640, #4f3c2a);
+    }
+
+    .aett-tyr {
+      border: 1px solid #6a3f2e;
+      background: linear-gradient(180deg, #7a4c38, #5a3323);
+    }
+
     @media (max-width: 1180px) {
       .layout { grid-template-columns: 1fr; }
       .canvas-box { min-height: 360px; }
+    }
+
+    @media (max-width: 900px) {
+      .library-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -365,12 +446,16 @@
   <div class="wrap">
     <h1>Créateur de Bindrunes — Atelier ésotérique</h1>
     <div class="eyebrow">Grimoire de composition runique</div>
-    <p class="lead">
-      Choisis une intention avec un combo usuel, sélectionne jusqu’à 6 runes si tu veux personnaliser, puis compose ta bindrune sur le parchemin.
-    </p>
+    <p class="lead">Choisis une intention avec un combo usuel, sélectionne jusqu’à 4 runes si tu veux personnaliser, puis compose ta bindrune sur le parchemin.</p>
 
     <div class="layout">
       <aside class="stack">
+        <section class="panel">
+          <h2>Référence complète</h2>
+          <div class="subtle" style="margin-bottom:10px;">Ouvre le grimoire pour consulter toutes les runes du Futhark ancien avec leur son, leur ætt, leurs sens, usages et leur lore.</div>
+          <button id="toggleRuneLibrary" class="btn-accent">Ouvrir le grimoire des 24 runes</button>
+        </section>
+
         <section class="panel">
           <h2>1) Mode guidé</h2>
           <div class="stack">
@@ -378,7 +463,6 @@
               <label for="intentionSelect">Intention</label>
               <select id="intentionSelect"></select>
             </div>
-
             <div class="field">
               <label for="supportSelect">Choix du support</label>
               <select id="supportSelect">
@@ -392,19 +476,17 @@
                 <option value="autre">autre</option>
               </select>
             </div>
-
             <div class="btn-row">
               <button class="btn-accent" id="applySuggestion">Choisir ce combo</button>
               <button id="clearSuggestion">Vider</button>
             </div>
-
             <div class="subtle" id="intentionSummary"></div>
           </div>
         </section>
 
         <section class="panel">
-          <h2>2) Sélection de 6 runes</h2>
-          <div class="subtle" style="margin-bottom:10px;">Choisis jusqu’à 6 runes pour remplir le parchemin de composition.</div>
+          <h2>2) Sélection de 4 runes</h2>
+          <div class="subtle" style="margin-bottom:10px;">Choisis jusqu’à 4 runes pour remplir le parchemin de composition. La 4e rune reste optionnelle, peu recommandée et souvent moins stable.</div>
           <div class="slots" id="slotSelectors"></div>
           <div class="divider"></div>
           <div class="btn-row">
@@ -437,14 +519,7 @@
             <button class="btn-accent" id="downloadPng">Exporter PNG</button>
             <button id="resetCanvas">Reset</button>
           </div>
-          <div class="subtle" style="margin-top:12px;">
-            Astuce : sélectionne une rune sur le canevas puis utilise aussi les touches
-            <span class="kbd">↑</span>
-            <span class="kbd">↓</span>
-            <span class="kbd">←</span>
-            <span class="kbd">→</span>
-            pour l’ajuster finement.
-          </div>
+          <div class="subtle" style="margin-top:12px;">Astuce : sélectionne une rune sur le canevas puis utilise aussi les touches <span class="kbd">↑</span> <span class="kbd">↓</span> <span class="kbd">←</span> <span class="kbd">→</span> pour l’ajuster finement.</div>
         </section>
       </aside>
 
@@ -478,413 +553,729 @@
     </div>
   </div>
 
+  <div class="library-overlay" id="libraryOverlay" aria-hidden="true">
+    <div class="library-modal" role="dialog" aria-modal="true" aria-labelledby="libraryTitle">
+      <div class="library-header">
+        <h2 class="library-title" id="libraryTitle">Grimoire complet des 24 runes</h2>
+        <button id="closeRuneLibrary" class="btn-soft" style="width:auto; min-width:120px;">Fermer</button>
+      </div>
+      <div class="library-content">
+        <div class="subtle" style="margin-bottom:14px;">Référence de ton univers runique : significations, usages et lore pratique pour composer les bindrunes.</div>
+        <div class="library-grid" id="libraryGrid"></div>
+      </div>
+    </div>
+  </div>
+
   <script>
-    const RUNES = [
-      { name: 'Fehu', char: 'ᚠ', sound: 'f', aett: 1, meanings: 'richesse mobile, énergie, circulation', usage: 'argent, ressources, démarrage' },
-      { name: 'Uruz', char: 'ᚢ', sound: 'u', aett: 1, meanings: 'force vitale, endurance, puissance brute', usage: 'santé, courage, reconstruction' },
-      { name: 'Thurisaz', char: 'ᚦ', sound: 'th', aett: 1, meanings: 'défense, seuil, force réactive', usage: 'protection, couper une nuisance' },
-      { name: 'Ansuz', char: 'ᚨ', sound: 'a', aett: 1, meanings: 'parole, souffle, inspiration, message', usage: 'communication, étude, guidance' },
-      { name: 'Raidho', char: 'ᚱ', sound: 'r', aett: 1, meanings: 'route, mouvement juste, rythme', usage: 'voyage, progression, bon timing' },
-      { name: 'Kenaz', char: 'ᚲ', sound: 'k', aett: 1, meanings: 'torche, clarté, savoir-faire, révélation', usage: 'apprentissage, créativité, guérison ciblée' },
-      { name: 'Gebo', char: 'ᚷ', sound: 'g', aett: 1, meanings: 'don, échange, équilibre relationnel', usage: 'alliances, contrats, réciprocité' },
-      { name: 'Wunjo', char: 'ᚹ', sound: 'w / v', aett: 1, meanings: 'joie, harmonie, cohésion', usage: 'apaisement, ambiance, réussite fluide' },
-      { name: 'Hagalaz', char: 'ᚺ', sound: 'h', aett: 2, meanings: 'disruption, changement, nettoyage', usage: 'casser une stagnation' },
-      { name: 'Nauthiz', char: 'ᚾ', sound: 'n', aett: 2, meanings: 'nécessité, contrainte, discipline', usage: 'tenir bon, patience, survie' },
-      { name: 'Isa', char: 'ᛁ', sound: 'i', aett: 2, meanings: 'glace, arrêt, concentration, fixation', usage: 'stabiliser, ralentir, figer un excès' },
-      { name: 'Jera', char: 'ᛃ', sound: 'j / y', aett: 2, meanings: 'cycle, récolte, saison juste', usage: 'prospérité durable, résultats, patience' },
-      { name: 'Eihwaz', char: 'ᛇ', sound: 'ï / ei / y', aett: 2, meanings: 'axe, endurance, protection profonde', usage: 'ancrage, passage difficile, résistance' },
-      { name: 'Perthro', char: 'ᛈ', sound: 'p', aett: 2, meanings: 'mystère, potentiel caché, matrice', usage: 'intuition, déblocage' },
-      { name: 'Algiz', char: 'ᛉ', sound: 'z / ʀ', aett: 2, meanings: 'protection, vigilance, lien au sacré', usage: 'bouclier, sécurité, limites saines' },
-      { name: 'Sowilo', char: 'ᛊ', sound: 's', aett: 2, meanings: 'soleil, succès, vitalité, direction', usage: 'énergie, clarté, victoire' },
-      { name: 'Tiwaz', char: 'ᛏ', sound: 't', aett: 3, meanings: 'justice, honneur, décision, droiture', usage: 'leadership, arbitrage, courage moral' },
-      { name: 'Berkano', char: 'ᛒ', sound: 'b', aett: 3, meanings: 'croissance, soin, naissance', usage: 'guérison, douceur, nouveau départ' },
-      { name: 'Ehwaz', char: 'ᛖ', sound: 'e', aett: 3, meanings: 'confiance, coopération, avancée', usage: 'partenariat, déplacement, fluidité' },
-      { name: 'Mannaz', char: 'ᛗ', sound: 'm', aett: 3, meanings: 'humain, conscience, esprit, communauté', usage: 'mémoire, identité, relations' },
-      { name: 'Laguz', char: 'ᛚ', sound: 'l', aett: 3, meanings: 'eau, flux, intuition, adaptation', usage: 'émotions, voyage fluide, rêves' },
-      { name: 'Ingwaz', char: 'ᛜ', sound: 'ng', aett: 3, meanings: 'gestation, réserve, maturation interne', usage: 'préparation, recentrage, intériorité' },
-      { name: 'Dagaz', char: 'ᛞ', sound: 'd', aett: 3, meanings: 'jour, bascule, éveil, transformation claire', usage: 'percée, renouveau, déclic' },
-      { name: 'Othala', char: 'ᛟ', sound: 'o', aett: 3, meanings: 'héritage, maison, terre, appartenance', usage: 'foyer, lignage, enracinement' }
-    ];
+    document.addEventListener('DOMContentLoaded', () => {
+      const RUNES = [
+        {
+          name: 'Fehu',
+          char: 'ᚠ',
+          sound: 'f',
+          aett: 1,
+          meanings: 'bétail, abondance, richesse, prospérité, responsabilité face aux ressources',
+          usage: 'attirer la prospérité, travailler l’abondance, rappeler les limites de la cupidité',
+          lore: 'Rune liée au bétail, symbole de richesse vivante. Elle parle d’abondance mais aussi de responsabilité et de maîtrise des ressources.'
+        },
+        {
+          name: 'Uruz',
+          char: 'ᚢ',
+          sound: 'ou / u',
+          aett: 1,
+          meanings: 'aurochs, force vitale, endurance, puissance du corps',
+          usage: 'revitalisation, renforcement du corps, soutien immunitaire, guérison physique',
+          lore: 'Associée à l’aurochs, elle soutient la force brute, l’endurance et la capacité du corps à se relever.'
+        },
+        {
+          name: 'Thurisaz',
+          char: 'ᚦ',
+          sound: 'th',
+          aett: 1,
+          meanings: 'épine, défense, force de Thor, puissance de protection',
+          usage: 'repousser les menaces, dissiper les obstacles, défense active',
+          lore: 'Rune associée au marteau de Thor. Elle agit comme une force puissante de défense et de rupture face au danger.'
+        },
+        {
+          name: 'Ansuz',
+          char: 'ᚨ',
+          sound: 'a',
+          aett: 1,
+          meanings: 'dieu, parole, expression, communication, signe',
+          usage: 'clarifier un message, mieux interpréter les signes, renforcer la parole juste',
+          lore: 'Rune de la parole inspirée, des messages subtils et de la sagesse dans l’interprétation.'
+        },
+        {
+          name: 'Raidho',
+          char: 'ᚱ',
+          sound: 'r',
+          aett: 1,
+          meanings: 'roue, voyage, mouvement, rythme, ordre cosmique',
+          usage: 'voyage physique ou spirituel, déplacement, cycles, évolution juste',
+          lore: 'Elle représente le voyage, le rythme des choses et l’alignement avec les cycles naturels.'
+        },
+        {
+          name: 'Kenaz',
+          char: 'ᚲ',
+          sound: 'k',
+          aett: 1,
+          meanings: 'flambeau, connaissance, révélation, créativité, feu intérieur',
+          usage: 'apprentissage, illumination, dissiper l’ignorance, éveiller un talent',
+          lore: 'Rune du flambeau et du feu intérieur. Elle révèle, éclaire et brûle les ténèbres de l’ignorance.'
+        },
+        {
+          name: 'Gebo',
+          char: 'ᚷ',
+          sound: 'g',
+          aett: 1,
+          meanings: 'cadeau, échange, partage, équilibre entre donner et recevoir',
+          usage: 'alliances, dons matériels ou spirituels, harmoniser les échanges',
+          lore: 'Rune du don juste. Elle rappelle que tout échange doit garder un équilibre.'
+        },
+        {
+          name: 'Wunjo',
+          char: 'ᚹ',
+          sound: 'w / v',
+          aett: 1,
+          meanings: 'joie, bonheur, harmonie, satisfaction',
+          usage: 'ramener l’harmonie, soutenir les réalisations, nourrir la joie partagée',
+          lore: 'Rune des moments heureux, de l’accomplissement et de la paix intérieure ou collective.'
+        },
 
-    const INTENTIONS = {
-      'Protection': { runes: ['Algiz', 'Thurisaz', 'Eihwaz', 'Tiwaz'], logic: 'Combo usuel fréquent pour la protection, la défense et la stabilité.' },
-      'Prospérité': { runes: ['Fehu', 'Jera', 'Othala', 'Sowilo'], logic: 'Combo usuel fréquent pour les ressources, la récolte et l’élan.' },
-      'Guérison': { runes: ['Berkano', 'Uruz', 'Kenaz', 'Sowilo'], logic: 'Combo usuel fréquent pour le soin, la force et la régénération.' },
-      'Ancrage': { runes: ['Othala', 'Eihwaz', 'Isa', 'Ingwaz'], logic: 'Combo usuel fréquent pour l’enracinement et le recentrage.' },
-      'Voyage': { runes: ['Raidho', 'Ehwaz', 'Algiz', 'Laguz'], logic: 'Combo usuel fréquent pour un déplacement fluide et protégé.' },
-      'Mémoire': { runes: ['Mannaz', 'Ansuz', 'Kenaz', 'Isa'], logic: 'Combo usuel fréquent pour l’esprit, la clarté et la concentration.' }
-    };
+        {
+          name: 'Hagalaz',
+          char: 'ᚺ',
+          sound: 'h',
+          aett: 2,
+          meanings: 'grêle, chaos, bouleversement, crise transformatrice',
+          usage: 'accepter une rupture nécessaire, traverser une crise, provoquer une transformation',
+          lore: 'Force destructrice naturelle. Elle annonce les bouleversements inattendus qui obligent au changement.'
+        },
+        {
+          name: 'Nauthiz',
+          char: 'ᚾ',
+          sound: 'n',
+          aett: 2,
+          meanings: 'nécessité, contrainte, épreuve, manque',
+          usage: 'tenir dans l’adversité, travailler la résilience, comprendre une limitation',
+          lore: 'Rune des besoins, des tensions et des épreuves qui forgent la croissance personnelle.'
+        },
+        {
+          name: 'Isa',
+          char: 'ᛁ',
+          sound: 'i',
+          aett: 2,
+          meanings: 'glace, immobilité, stagnation, patience',
+          usage: 'mettre en pause, figer un excès, réfléchir, suspendre une action',
+          lore: 'Rune du gel et de la suspension. Elle invite à l’arrêt, à la patience et parfois à l’inaction consciente.'
+        },
+        {
+          name: 'Jera',
+          char: 'ᛃ',
+          sound: 'j / y',
+          aett: 2,
+          meanings: 'année, récolte, cycle, récompense',
+          usage: 'attendre la juste saison, récolter le fruit d’un effort, comprendre les cycles',
+          lore: 'Rune de la récolte et du temps juste. Elle rappelle que toute chose mûrit selon son propre rythme.'
+        },
+        {
+          name: 'Eihwaz',
+          char: 'ᛇ',
+          sound: 'ei / y',
+          aett: 2,
+          meanings: 'if, défense, persévérance, transformation, continuité',
+          usage: 'protection profonde, endurance, passage difficile, renaissance',
+          lore: 'Associée à l’if, rune de résistance, de passage et de continuité entre les mondes.'
+        },
+        {
+          name: 'Perthro',
+          char: 'ᛈ',
+          sound: 'p',
+          aett: 2,
+          meanings: 'coupe, destin, mystère, hasard, secret',
+          usage: 'révéler un secret, accueillir l’inattendu, travailler avec le destin',
+          lore: 'Rune du mystère, du hasard et des vérités cachées qui surgissent au bon moment.'
+        },
+        {
+          name: 'Algiz',
+          char: 'ᛉ',
+          sound: 'z / ʀ',
+          aett: 2,
+          meanings: 'protection, élan, barrière, vigilance, intuition face au danger',
+          usage: 'former un bouclier, se protéger, sécuriser un lieu, sentir une menace',
+          lore: 'Rune de protection par excellence, dressée comme des bois d’élan face au danger.'
+        },
+        {
+          name: 'Sowilo',
+          char: 'ᛋ',
+          sound: 's',
+          aett: 2,
+          meanings: 'soleil, lumière, succès, victoire, clarté',
+          usage: 'guider, illuminer, dissiper les ténèbres, renforcer la réussite',
+          lore: 'Rune solaire de lumière, de guidance et de victoire sur l’obscurité.'
+        },
 
-    const SLOT_LABELS = ['Rune 1', 'Rune 2', 'Rune 3', 'Rune 4', 'Rune 5', 'Rune 6'];
+        {
+          name: 'Tiwaz',
+          char: 'ᛏ',
+          sound: 't',
+          aett: 3,
+          meanings: 'lance de Tyr, honneur, justice, combat loyal',
+          usage: 'agir avec droiture, défendre une cause juste, soutenir une décision claire',
+          lore: 'Rune de la justice et du combat mené avec honneur. Elle soutient ce qui est défendu avec justesse.'
+        },
+        {
+          name: 'Berkano',
+          char: 'ᛒ',
+          sound: 'b',
+          aett: 3,
+          meanings: 'bouleau, croissance, fertilité, guérison émotionnelle',
+          usage: 'guérison, nouveau départ, apaisement émotionnel, protection du mental',
+          lore: 'Rune du bouleau et de la croissance. Elle soigne, apaise et soutient le renouveau.'
+        },
+        {
+          name: 'Ehwaz',
+          char: 'ᛖ',
+          sound: 'e',
+          aett: 3,
+          meanings: 'cheval, partenariat, progression, déplacement',
+          usage: 'collaboration, voyage, mouvement harmonieux, progrès partagé',
+          lore: 'Rune du cheval et de l’avancée conjointe. Elle soutient les alliances et les déplacements.'
+        },
+        {
+          name: 'Mannaz',
+          char: 'ᛗ',
+          sound: 'm',
+          aett: 3,
+          meanings: 'homme, intelligence collective, conscience, entraide',
+          usage: 'mémoire, soutien du groupe, compréhension de soi, coopération',
+          lore: 'Rune de l’esprit humain, de l’entraide et de l’intelligence partagée.'
+        },
+        {
+          name: 'Laguz',
+          char: 'ᛚ',
+          sound: 'l',
+          aett: 3,
+          meanings: 'eau, flux, intuition, purification, émotions',
+          usage: 'faire circuler l’énergie, éliminer des blocages, purifier, suivre l’intuition',
+          lore: 'Rune de l’eau et du flux. Elle lave, relie, adoucit et remet le mouvement là où tout est figé.'
+        },
+        {
+          name: 'Ingwaz',
+          char: 'ᛜ',
+          sound: 'ng',
+          aett: 3,
+          meanings: 'graine, potentiel, gestation, maturation',
+          usage: 'laisser mûrir un projet, protéger une idée en croissance, intériorité',
+          lore: 'Rune de la graine et du potentiel contenu. Ce qui n’est pas encore visible y grandit.'
+        },
+        {
+          name: 'Dagaz',
+          char: 'ᛞ',
+          sound: 'd',
+          aett: 3,
+          meanings: 'aube, révélation, transition positive, illumination',
+          usage: 'accueillir un changement, comprendre un tournant, sortir d’une obscurité',
+          lore: 'Rune de l’aube et du basculement lumineux. Elle accompagne les passages décisifs.'
+        },
+        {
+          name: 'Othala',
+          char: 'ᛟ',
+          sound: 'o',
+          aett: 3,
+          meanings: 'héritage, famille, racines, mémoire ancestrale',
+          usage: 'travail sur la lignée, protection du foyer, enracinement, retour aux origines',
+          lore: 'Rune des racines, de l’héritage et des terres intérieures ou familiales.'
+        }
+      ];
 
-    const selectorsHost = document.getElementById('slotSelectors');
-    const suggestionsHost = document.getElementById('suggestions');
-    const intentionSelect = document.getElementById('intentionSelect');
-    const supportSelect = document.getElementById('supportSelect');
-    const intentionSummary = document.getElementById('intentionSummary');
-    const badgeIntention = document.getElementById('badgeIntention');
-    const badgeSupport = document.getElementById('badgeSupport');
-    const selectedRunesText = document.getElementById('selectedRunesText');
-    const meaningText = document.getElementById('meaningText');
+      const INTENTIONS = {
+        'Protection': {
+          runes: ['Algiz', 'Thurisaz', 'Eihwaz', 'Tiwaz'],
+          logic: 'Protection forte : Algiz forme le bouclier, Thurisaz repousse l’attaque, Eihwaz tient dans l’épreuve, Tiwaz donne la droiture et la tenue.'
+        },
+        'Guérison': {
+          runes: ['Uruz', 'Berkano', 'Laguz', 'Sowilo'],
+          logic: 'Guérison complète : Uruz redonne la force vitale, Berkano soigne et régénère, Laguz remet le flux, Sowilo éclaire et vitalise.'
+        },
+        'Prospérité': {
+          runes: ['Fehu', 'Jera', 'Gebo', 'Othala'],
+          logic: 'Prospérité enracinée : Fehu attire l’abondance, Jera apporte la récolte, Gebo équilibre les échanges, Othala stabilise par les racines et l’héritage.'
+        },
+        'Voyage': {
+          runes: ['Raidho', 'Ehwaz', 'Algiz', 'Ansuz'],
+          logic: 'Voyage guidé : Raidho met le mouvement en route, Ehwaz accompagne le déplacement, Algiz protège, Ansuz aide à lire les signes du chemin.'
+        },
+        'Mémoire': {
+          runes: ['Mannaz', 'Ansuz', 'Kenaz', 'Isa'],
+          logic: 'Mémoire et lecture intérieure : Mannaz structure l’esprit, Ansuz ouvre à la compréhension, Kenaz éclaire, Isa fige l’attention.'
+        },
+        'Transformation': {
+          runes: ['Hagalaz', 'Nauthiz', 'Eihwaz', 'Dagaz'],
+          logic: 'Transformation profonde : Hagalaz provoque la rupture, Nauthiz force l’apprentissage, Eihwaz traverse l’épreuve, Dagaz ouvre le renouveau.'
+        },
+        'Joie & harmonie': {
+          runes: ['Wunjo', 'Gebo', 'Berkano', 'Sowilo'],
+          logic: 'Harmonie douce : Wunjo apporte la joie, Gebo l’équilibre relationnel, Berkano soigne l’émotionnel, Sowilo rayonne.'
+        },
+        'Divination': {
+          runes: ['Ansuz', 'Perthro', 'Laguz', 'Kenaz'],
+          logic: 'Lecture symbolique : Ansuz transmet le message, Perthro ouvre le mystère, Laguz fluidifie l’intuition, Kenaz révèle.'
+        }
+      };
 
-    const canvasContainer = document.getElementById('canvas-container');
-    const canvas = new fabric.Canvas('runeCanvas', {
-      backgroundColor: '#efe0b8',
-      preserveObjectStacking: true
-    });
+      const SUPPORT_THEMES = {
+        '':       { paper1: '#efe0b8', paper2: '#e2c993', border: '#8a6a3e', shadow: 'inset 0 0 40px rgba(122, 81, 31, 0.18)' },
+        'papier': { paper1: '#efe0b8', paper2: '#e2c993', border: '#8a6a3e', shadow: 'inset 0 0 40px rgba(122, 81, 31, 0.18)' },
+        'bois':   { paper1: '#cda06a', paper2: '#9c6a3e', border: '#6f4727', shadow: 'inset 0 0 44px rgba(78, 46, 18, 0.26)' },
+        'pierre': { paper1: '#cfc9be', paper2: '#a8a196', border: '#7b756d', shadow: 'inset 0 0 44px rgba(60, 56, 50, 0.22)' },
+        'bijou':  { paper1: '#d8d1b0', paper2: '#b39a5c', border: '#90733b', shadow: 'inset 0 0 44px rgba(112, 82, 24, 0.24)' },
+        'cuir':   { paper1: '#b88452', paper2: '#7d4f2c', border: '#6b3f1f', shadow: 'inset 0 0 44px rgba(76, 37, 15, 0.28)' },
+        'carnet': { paper1: '#ead8ae', paper2: '#d3bb84', border: '#8d7346', shadow: 'inset 0 0 42px rgba(110, 82, 28, 0.20)' },
+        'autre':  { paper1: '#e6d6b2', paper2: '#cdb07a', border: '#8a6a3e', shadow: 'inset 0 0 40px rgba(122, 81, 31, 0.18)' }
+      };
 
-    const runeObjects = {};
-    const slotValues = new Array(6).fill('');
-    const moveIncrement = 2;
+      const SLOT_LABELS = ['Rune 1', 'Rune 2', 'Rune 3', 'Rune 4 (optionnelle, peu recommandée, moins stable)'];
 
-    function getRuneByName(name) {
-      return RUNES.find(r => r.name === name);
-    }
+      const selectorsHost = document.getElementById('slotSelectors');
+      const suggestionsHost = document.getElementById('suggestions');
+      const intentionSelect = document.getElementById('intentionSelect');
+      const supportSelect = document.getElementById('supportSelect');
+      const intentionSummary = document.getElementById('intentionSummary');
+      const badgeIntention = document.getElementById('badgeIntention');
+      const badgeSupport = document.getElementById('badgeSupport');
+      const selectedRunesText = document.getElementById('selectedRunesText');
+      const meaningText = document.getElementById('meaningText');
+      const libraryOverlay = document.getElementById('libraryOverlay');
+      const libraryGrid = document.getElementById('libraryGrid');
+      const canvasContainer = document.getElementById('canvas-container');
 
-    function resizeCanvas() {
-      const size = canvasContainer.clientWidth;
-      canvas.setWidth(size);
-      canvas.setHeight(size);
-      canvas.renderAll();
-    }
-
-    function initIntentionSelect() {
-      intentionSelect.innerHTML = '<option value="">Choisir une intention</option>';
-      Object.keys(INTENTIONS).forEach(key => {
-        const opt = document.createElement('option');
-        opt.value = key;
-        opt.textContent = key;
-        intentionSelect.appendChild(opt);
+      const canvas = new fabric.Canvas('runeCanvas', {
+        backgroundColor: 'rgba(0,0,0,0)',
+        preserveObjectStacking: true
       });
-    }
 
-    function createSlotSelectors() {
-      selectorsHost.innerHTML = '';
-      SLOT_LABELS.forEach((labelText, index) => {
-        const field = document.createElement('div');
-        field.className = 'field';
+      const runeObjects = {};
+      const slotValues = new Array(4).fill('');
+      const moveIncrement = 2;
 
-        const label = document.createElement('label');
-        label.textContent = labelText;
+      const getRuneByName = (name) => RUNES.find(r => r.name === name);
 
-        const row = document.createElement('div');
-        row.className = 'slot-row';
+      function applySupportTheme() {
+        const support = supportSelect.value || '';
+        const theme = SUPPORT_THEMES[support] || SUPPORT_THEMES[''];
+        canvasContainer.style.setProperty('--canvas-paper-1', theme.paper1);
+        canvasContainer.style.setProperty('--canvas-paper-2', theme.paper2);
+        canvasContainer.style.borderColor = theme.border;
+        canvasContainer.style.boxShadow = theme.shadow;
+        canvasContainer.style.background =
+          `radial-gradient(circle at 30% 20%, rgba(255,255,255,0.25), transparent 22%), linear-gradient(180deg, ${theme.paper1}, ${theme.paper2})`;
+        canvas.renderAll();
+      }
 
-        const select = document.createElement('select');
-        select.id = `slot-${index}`;
-        select.dataset.index = index;
-        select.innerHTML = '<option value="">Aucune</option>' + RUNES.map(r => `<option value="${r.name}">${r.name} ${r.char}</option>`).join('');
-        select.addEventListener('change', (e) => {
-          const idx = Number(e.target.dataset.index);
-          setSlotRune(idx, e.target.value);
+      function resizeCanvas() {
+        const size = canvasContainer.clientWidth;
+        canvas.setWidth(size);
+        canvas.setHeight(size);
+        canvas.renderAll();
+      }
+
+      function initIntentionSelect() {
+        intentionSelect.innerHTML = '<option value="">Choisir une intention</option>';
+        Object.keys(INTENTIONS).forEach(key => {
+          const opt = document.createElement('option');
+          opt.value = key;
+          opt.textContent = key;
+          intentionSelect.appendChild(opt);
+        });
+      }
+
+      function createSlotSelectors() {
+        selectorsHost.innerHTML = '';
+        SLOT_LABELS.forEach((labelText, index) => {
+          const field = document.createElement('div');
+          field.className = 'field';
+
+          const label = document.createElement('label');
+          label.textContent = labelText;
+
+          const row = document.createElement('div');
+          row.className = 'slot-row';
+
+          const select = document.createElement('select');
+          select.id = `slot-${index}`;
+          select.dataset.index = index;
+          select.innerHTML = '<option value="">Aucune</option>' + RUNES.map(r => `<option value="${r.name}">${r.name} ${r.char}</option>`).join('');
+          select.addEventListener('change', (e) => setSlotRune(Number(e.target.dataset.index), e.target.value));
+
+          const tag = document.createElement('div');
+          tag.className = 'slot-tag';
+          tag.textContent = `Slot ${index + 1}`;
+
+          row.appendChild(select);
+          row.appendChild(tag);
+          field.appendChild(label);
+          field.appendChild(row);
+          selectorsHost.appendChild(field);
+        });
+      }
+
+      function renderRuneLibrary() {
+        libraryGrid.innerHTML = '';
+
+        const groups = [
+          {
+            title: 'Ætt de Freyr / Freyja',
+            aett: 1,
+            intro: 'Premier ætt : abondance, force, mouvement, communication, échange, joie et feu de la connaissance.',
+            className: 'aett-freyr'
+          },
+          {
+            title: 'Ætt de Heimdall',
+            aett: 2,
+            intro: 'Deuxième ætt : nécessité, cycles, protection, chaos, mystère, endurance et lumière de guidance.',
+            className: 'aett-heimdall'
+          },
+          {
+            title: 'Ætt de Tyr',
+            aett: 3,
+            intro: 'Troisième ætt : justice, guérison, partenariat, conscience, intuition, gestation, aube et héritage.',
+            className: 'aett-tyr'
+          }
+        ];
+
+        groups.forEach(group => {
+          const section = document.createElement('div');
+          section.className = `library-section ${group.className}`;
+          section.innerHTML = `
+            <div class="library-section-title">${group.title}</div>
+            <div class="library-section-intro">${group.intro}</div>
+          `;
+          libraryGrid.appendChild(section);
+
+          RUNES
+            .filter(rune => rune.aett === group.aett)
+            .forEach((rune) => {
+              const card = document.createElement('div');
+              card.className = 'library-card';
+              card.innerHTML = `
+                <div class="library-glyph">${rune.char}</div>
+                <div>
+                  <h3>${rune.name}</h3>
+                  <div class="library-meta">Ætt ${rune.aett} · son ${rune.sound}</div>
+                  <div class="library-desc">
+                    <strong>Sens :</strong> ${rune.meanings}<br>
+                    <strong>Usages :</strong> ${rune.usage}<br>
+                    <strong>Lore :</strong> ${rune.lore}
+                  </div>
+                </div>
+              `;
+              libraryGrid.appendChild(card);
+            });
+        });
+      }
+
+      function renderSuggestions() {
+        suggestionsHost.innerHTML = '';
+        const intention = intentionSelect.value;
+        const list = intention && INTENTIONS[intention]
+          ? INTENTIONS[intention].runes.map(getRuneByName).filter(Boolean)
+          : RUNES.slice(0, 8);
+
+        list.forEach((rune) => {
+          const card = document.createElement('div');
+          card.className = 'rune-card';
+          card.innerHTML = `
+            <div class="rune-glyph">${rune.char}</div>
+            <div>
+              <h3>${rune.name}</h3>
+              <div class="rune-meta">Ætt ${rune.aett} · son ${rune.sound}</div>
+              <div class="rune-desc">
+                <strong>Sens :</strong> ${rune.meanings}<br>
+                <strong>Usages :</strong> ${rune.usage}
+              </div>
+            </div>
+            <div class="rune-actions">
+              <button class="btn-soft" data-add="${rune.name}">Ajouter</button>
+              <button data-main="${rune.name}">Mettre en 1</button>
+            </div>
+          `;
+          suggestionsHost.appendChild(card);
         });
 
-        const tag = document.createElement('div');
-        tag.className = 'slot-tag';
-        tag.textContent = `Slot ${index + 1}`;
+        suggestionsHost.querySelectorAll('[data-add]').forEach(btn =>
+          btn.addEventListener('click', () => addRuneToNextSlot(btn.dataset.add))
+        );
+        suggestionsHost.querySelectorAll('[data-main]').forEach(btn =>
+          btn.addEventListener('click', () => setSlotRune(0, btn.dataset.main))
+        );
+      }
 
-        row.appendChild(select);
-        row.appendChild(tag);
-        field.appendChild(label);
-        field.appendChild(row);
-        selectorsHost.appendChild(field);
-      });
-    }
+      function getRecommendedNames() {
+        const intention = intentionSelect.value;
+        return intention && INTENTIONS[intention] ? INTENTIONS[intention].runes.slice(0, 4) : [];
+      }
 
-    function renderSuggestions() {
-      suggestionsHost.innerHTML = '';
-      const intention = intentionSelect.value;
-      const list = intention && INTENTIONS[intention]
-        ? INTENTIONS[intention].runes.map(name => getRuneByName(name)).filter(Boolean)
-        : RUNES.slice(0, 8);
-
-      list.forEach((rune) => {
-        const card = document.createElement('div');
-        card.className = 'rune-card';
-        card.innerHTML = `
-          <div class="rune-glyph">${rune.char}</div>
-          <div>
-            <h3>${rune.name}</h3>
-            <div class="rune-meta">Ætt ${rune.aett} · son ${rune.sound}</div>
-            <div class="rune-desc"><strong>Sens :</strong> ${rune.meanings}<br><strong>Usages :</strong> ${rune.usage}</div>
-          </div>
-          <div class="rune-actions">
-            <button class="btn-soft" data-add="${rune.name}">Ajouter</button>
-            <button data-main="${rune.name}">Mettre en 1</button>
-          </div>
-        `;
-        suggestionsHost.appendChild(card);
-      });
-
-      suggestionsHost.querySelectorAll('[data-add]').forEach(btn => {
-        btn.addEventListener('click', () => addRuneToNextSlot(btn.dataset.add));
-      });
-
-      suggestionsHost.querySelectorAll('[data-main]').forEach(btn => {
-        btn.addEventListener('click', () => setSlotRune(0, btn.dataset.main));
-      });
-    }
-
-    function getRecommendedNames() {
-      const intention = intentionSelect.value;
-      return intention && INTENTIONS[intention] ? INTENTIONS[intention].runes.slice(0, 6) : [];
-    }
-
-    function applyIntentionText() {
-      const intention = intentionSelect.value;
-      if (!intention || !INTENTIONS[intention]) {
-        intentionSummary.textContent = 'Choisis une intention pour recevoir un combo usuel fréquent.';
-        badgeIntention.textContent = 'Intention : —';
+      function applyIntentionText() {
+        const intention = intentionSelect.value;
+        if (!intention || !INTENTIONS[intention]) {
+          intentionSummary.textContent = 'Choisis une intention pour recevoir un combo usuel fréquent.';
+          badgeIntention.textContent = 'Intention : —';
+          badgeSupport.textContent = `Support : ${supportSelect.value || '—'}`;
+          return;
+        }
+        const info = INTENTIONS[intention];
+        intentionSummary.innerHTML = `<strong>Combo usuel fréquent :</strong> ${info.runes.join(' + ')}<br><strong>Lecture :</strong> ${info.logic}`;
+        badgeIntention.textContent = `Intention : ${intention}`;
         badgeSupport.textContent = `Support : ${supportSelect.value || '—'}`;
-        return;
       }
 
-      const info = INTENTIONS[intention];
-      intentionSummary.innerHTML = `<strong>Combo usuel fréquent :</strong> ${info.runes.join(' + ')}<br><strong>Lecture :</strong> ${info.logic}`;
-      badgeIntention.textContent = `Intention : ${intention}`;
-      badgeSupport.textContent = `Support : ${supportSelect.value || '—'}`;
-    }
-
-    function nextEmptySlot() {
-      return slotValues.findIndex(v => !v);
-    }
-
-    function setSlotRune(index, runeName) {
-      slotValues[index] = runeName || '';
-      const select = document.getElementById(`slot-${index}`);
-      if (select && select.value !== runeName) select.value = runeName || '';
-      syncCanvasFromSlots();
-      updateSummary();
-    }
-
-    function addRuneToNextSlot(name) {
-      const idx = nextEmptySlot();
-      if (idx === -1) {
-        setSlotRune(5, name);
-        return;
+      function defaultPlacement(index) {
+        const w = canvas.getWidth();
+        const h = canvas.getHeight();
+        const placements = [
+          { left: w / 2, top: h / 2 },
+          { left: w / 2 - w * 0.06, top: h / 2 },
+          { left: w / 2 + w * 0.06, top: h / 2 },
+          { left: w / 2, top: h / 2 - h * 0.08 }
+        ];
+        return placements[index] || placements[0];
       }
-      setSlotRune(idx, name);
-    }
 
-    function fillRecommended() {
-      const names = getRecommendedNames();
-      SLOT_LABELS.forEach((_, i) => setSlotRune(i, names[i] || ''));
-      updateSummary();
-    }
+      function createRuneObject(rune, slotIndex) {
+        const pos = defaultPlacement(slotIndex);
+        const text = new fabric.Text(rune.char, {
+          left: pos.left,
+          top: pos.top,
+          originX: 'center',
+          originY: 'center',
+          fontSize: canvas.getWidth() * (slotIndex === 0 ? 0.31 : 0.24),
+          fontFamily: 'serif',
+          fill: '#2f2014',
+          stroke: '#4a301d',
+          strokeWidth: 0.35,
+          cornerColor: '#b8893c',
+          borderColor: '#b8893c',
+          transparentCorners: false,
+          slotId: `slot-${slotIndex}`,
+          runeName: rune.name
+        });
+        canvas.add(text);
+        runeObjects[`slot-${slotIndex}`] = text;
+      }
 
-    function clearSlots() {
-      SLOT_LABELS.forEach((_, i) => setSlotRune(i, ''));
-      updateSummary();
-    }
+      function syncCanvasFromSlots() {
+        SLOT_LABELS.forEach((_, index) => {
+          const key = `slot-${index}`;
+          const runeName = slotValues[index];
+          const obj = runeObjects[key];
 
-    function runeObjectForSlot(slotId) {
-      return runeObjects[slotId] || null;
-    }
-
-    function defaultPlacement(index) {
-      const w = canvas.getWidth();
-      const h = canvas.getHeight();
-      const placements = [
-        { left: w / 2, top: h / 2 },
-        { left: w / 2 - w * 0.06, top: h / 2 },
-        { left: w / 2 + w * 0.06, top: h / 2 },
-        { left: w / 2, top: h / 2 - h * 0.08 },
-        { left: w / 2 - w * 0.03, top: h / 2 + h * 0.08 },
-        { left: w / 2 + w * 0.03, top: h / 2 + h * 0.08 }
-      ];
-      return placements[index] || { left: w / 2, top: h / 2 };
-    }
-
-    function createRuneObject(rune, slotIndex) {
-      const pos = defaultPlacement(slotIndex);
-      const text = new fabric.Text(rune.char, {
-        left: pos.left,
-        top: pos.top,
-        originX: 'center',
-        originY: 'center',
-        fontSize: canvas.getWidth() * (slotIndex === 0 ? 0.31 : 0.24),
-        fontFamily: 'serif',
-        fill: '#2f2014',
-        stroke: '#4a301d',
-        strokeWidth: 0.35,
-        cornerColor: '#b8893c',
-        borderColor: '#b8893c',
-        transparentCorners: false,
-        slotId: `slot-${slotIndex}`,
-        runeName: rune.name
-      });
-      canvas.add(text);
-      runeObjects[`slot-${slotIndex}`] = text;
-      return text;
-    }
-
-    function syncCanvasFromSlots() {
-      SLOT_LABELS.forEach((_, index) => {
-        const key = `slot-${index}`;
-        const runeName = slotValues[index];
-        const obj = runeObjectForSlot(key);
-
-        if (!runeName) {
-          if (obj) {
-            canvas.remove(obj);
-            delete runeObjects[key];
+          if (!runeName) {
+            if (obj) {
+              canvas.remove(obj);
+              delete runeObjects[key];
+            }
+            return;
           }
+
+          const rune = getRuneByName(runeName);
+          if (!rune) return;
+
+          if (!obj) createRuneObject(rune, index);
+          else obj.set({ text: rune.char, runeName: rune.name });
+        });
+
+        canvas.renderAll();
+      }
+
+      function setSlotRune(index, runeName) {
+        slotValues[index] = runeName || '';
+        const select = document.getElementById(`slot-${index}`);
+        if (select && select.value !== runeName) select.value = runeName || '';
+        syncCanvasFromSlots();
+        updateSummary();
+      }
+
+      function addRuneToNextSlot(name) {
+        const idx = slotValues.findIndex(v => !v);
+        setSlotRune(idx === -1 ? 3 : idx, name);
+      }
+
+      function fillRecommended() {
+        const names = getRecommendedNames();
+        SLOT_LABELS.forEach((_, i) => setSlotRune(i, names[i] || ''));
+      }
+
+      function clearSlots() {
+        SLOT_LABELS.forEach((_, i) => setSlotRune(i, ''));
+      }
+
+      function updateSummary() {
+        const selected = slotValues.map(getRuneByName).filter(Boolean);
+        badgeIntention.textContent = `Intention : ${intentionSelect.value || '—'}`;
+        badgeSupport.textContent = `Support : ${supportSelect.value || '—'}`;
+
+        if (!selected.length) {
+          selectedRunesText.textContent = 'Aucune rune sélectionnée.';
+          meaningText.textContent = 'Choisis une intention ou ajoute une rune pour voir les explications.';
           return;
         }
 
-        const rune = getRuneByName(runeName);
-        if (!rune) return;
+        selectedRunesText.innerHTML = selected.map(r => `${r.name} ${r.char}`).join(' · ');
+        meaningText.innerHTML = selected.map(r =>
+          `<strong>${r.name}</strong> : ${r.meanings}<br><em>${r.lore}</em>`
+        ).join('<br><br>');
+      }
 
-        if (!obj) {
-          createRuneObject(rune, index);
-        } else {
-          obj.set({ text: rune.char, runeName: rune.name });
+      function resetCanvasAndState() {
+        canvas.clear();
+        canvas.backgroundColor = 'rgba(0,0,0,0)';
+        Object.keys(runeObjects).forEach(k => delete runeObjects[k]);
+        slotValues.fill('');
+        document.querySelectorAll('#slotSelectors select').forEach(s => s.value = '');
+        applySupportTheme();
+        resizeCanvas();
+        updateSummary();
+      }
+
+      function getActive() { return canvas.getActiveObject(); }
+
+      function moveActive(dx, dy) {
+        const obj = getActive();
+        if (!obj) return;
+        obj.set({ left: obj.left + dx, top: obj.top + dy });
+        canvas.renderAll();
+      }
+
+      function openRuneLibrary() {
+        libraryOverlay.classList.add('open');
+        libraryOverlay.setAttribute('aria-hidden', 'false');
+      }
+
+      function closeRuneLibrary() {
+        libraryOverlay.classList.remove('open');
+        libraryOverlay.setAttribute('aria-hidden', 'true');
+      }
+
+      document.getElementById('flipHorizontal').addEventListener('click', () => {
+        const o = getActive();
+        if (o) {
+          o.toggle('flipX');
+          canvas.renderAll();
         }
       });
 
-      canvas.renderAll();
-    }
+      document.getElementById('flipVertical').addEventListener('click', () => {
+        const o = getActive();
+        if (o) {
+          o.toggle('flipY');
+          canvas.renderAll();
+        }
+      });
 
-    function getActive() {
-      return canvas.getActiveObject();
-    }
+      document.getElementById('deleteRune').addEventListener('click', () => {
+        const o = getActive();
+        if (!o) return;
+        if (o.slotId) {
+          const idx = Number(o.slotId.replace('slot-', ''));
+          slotValues[idx] = '';
+          const select = document.getElementById(`slot-${idx}`);
+          if (select) select.value = '';
+          delete runeObjects[o.slotId];
+        }
+        canvas.remove(o);
+        canvas.renderAll();
+        updateSummary();
+      });
 
-    function moveActive(dx, dy) {
-      const obj = getActive();
-      if (!obj) return;
-      obj.set({ left: obj.left + dx, top: obj.top + dy });
-      canvas.renderAll();
-    }
+      document.getElementById('centerRune').addEventListener('click', () => {
+        const o = getActive();
+        if (o) {
+          o.set({ left: canvas.getWidth()/2, top: canvas.getHeight()/2, originX: 'center', originY: 'center' });
+          canvas.renderAll();
+        }
+      });
 
-    function selectedRunesData() {
-      return slotValues.map(name => getRuneByName(name)).filter(Boolean);
-    }
+      document.getElementById('bringForward').addEventListener('click', () => {
+        const o = getActive();
+        if (o) {
+          canvas.bringForward(o);
+          canvas.renderAll();
+        }
+      });
 
-    function updateSummary() {
-      const selected = selectedRunesData();
-      badgeIntention.textContent = `Intention : ${intentionSelect.value || '—'}`;
-      badgeSupport.textContent = `Support : ${supportSelect.value || '—'}`;
+      document.getElementById('sendBackward').addEventListener('click', () => {
+        const o = getActive();
+        if (o) {
+          canvas.sendBackwards(o);
+          canvas.renderAll();
+        }
+      });
 
-      if (!selected.length) {
-        selectedRunesText.textContent = 'Aucune rune sélectionnée.';
-        meaningText.textContent = 'Choisis une intention ou ajoute une rune pour voir les explications.';
-        return;
-      }
+      document.getElementById('moveUp').addEventListener('click', () => moveActive(0, -moveIncrement));
+      document.getElementById('moveDown').addEventListener('click', () => moveActive(0, moveIncrement));
+      document.getElementById('moveLeft').addEventListener('click', () => moveActive(-moveIncrement, 0));
+      document.getElementById('moveRight').addEventListener('click', () => moveActive(moveIncrement, 0));
 
-      selectedRunesText.innerHTML = selected.map(r => `${r.name} ${r.char}`).join(' · ');
-      meaningText.innerHTML = selected.map(r => `<strong>${r.name}</strong> : ${r.meanings}`).join('<br>');
-    }
+      document.getElementById('downloadPng').addEventListener('click', () => {
+        canvas.discardActiveObject();
+        canvas.renderAll();
+        const dataURL = canvas.toDataURL({ format: 'png', quality: 1, multiplier: 2 });
+        const a = document.createElement('a');
+        a.href = dataURL;
+        a.download = 'bindrune.png';
+        a.click();
+      });
 
-    function resetCanvasAndState() {
-      canvas.clear();
-      canvas.backgroundColor = '#efe0b8';
-      Object.keys(runeObjects).forEach(k => delete runeObjects[k]);
-      slotValues.fill('');
-      document.querySelectorAll('#slotSelectors select').forEach(s => s.value = '');
-      resizeCanvas();
-      updateSummary();
-    }
+      document.getElementById('resetCanvas').addEventListener('click', resetCanvasAndState);
+      document.getElementById('applySuggestion').addEventListener('click', fillRecommended);
+      document.getElementById('fillRecommended').addEventListener('click', fillRecommended);
+      document.getElementById('clearSuggestion').addEventListener('click', clearSlots);
+      document.getElementById('clearAllSlots').addEventListener('click', clearSlots);
+      document.getElementById('toggleRuneLibrary').addEventListener('click', openRuneLibrary);
+      document.getElementById('closeRuneLibrary').addEventListener('click', closeRuneLibrary);
 
-    document.getElementById('flipHorizontal').addEventListener('click', () => {
-      const obj = getActive();
-      if (!obj) return;
-      obj.toggle('flipX');
-      canvas.renderAll();
-    });
+      libraryOverlay.addEventListener('click', (e) => {
+        if (e.target === libraryOverlay) closeRuneLibrary();
+      });
 
-    document.getElementById('flipVertical').addEventListener('click', () => {
-      const obj = getActive();
-      if (!obj) return;
-      obj.toggle('flipY');
-      canvas.renderAll();
-    });
+      intentionSelect.addEventListener('change', () => {
+        applyIntentionText();
+        renderSuggestions();
+        updateSummary();
+      });
 
-    document.getElementById('deleteRune').addEventListener('click', () => {
-      const obj = getActive();
-      if (!obj) return;
-      if (obj.slotId) {
-        const idx = Number(obj.slotId.replace('slot-', ''));
-        slotValues[idx] = '';
-        const select = document.getElementById(`slot-${idx}`);
-        if (select) select.value = '';
-        delete runeObjects[obj.slotId];
-      }
-      canvas.remove(obj);
-      canvas.renderAll();
-      updateSummary();
-    });
+      supportSelect.addEventListener('change', () => {
+        applyIntentionText();
+        applySupportTheme();
+        updateSummary();
+      });
 
-    document.getElementById('centerRune').addEventListener('click', () => {
-      const obj = getActive();
-      if (!obj) return;
-      obj.set({ left: canvas.getWidth() / 2, top: canvas.getHeight() / 2, originX: 'center', originY: 'center' });
-      canvas.renderAll();
-    });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && libraryOverlay.classList.contains('open')) {
+          closeRuneLibrary();
+          return;
+        }
+        const o = getActive();
+        if (!o) return;
+        switch (event.key) {
+          case 'ArrowUp': event.preventDefault(); moveActive(0, -moveIncrement); break;
+          case 'ArrowDown': event.preventDefault(); moveActive(0, moveIncrement); break;
+          case 'ArrowLeft': event.preventDefault(); moveActive(-moveIncrement, 0); break;
+          case 'ArrowRight': event.preventDefault(); moveActive(moveIncrement, 0); break;
+        }
+      });
 
-    document.getElementById('bringForward').addEventListener('click', () => {
-      const obj = getActive();
-      if (!obj) return;
-      canvas.bringForward(obj);
-      canvas.renderAll();
-    });
-
-    document.getElementById('sendBackward').addEventListener('click', () => {
-      const obj = getActive();
-      if (!obj) return;
-      canvas.sendBackwards(obj);
-      canvas.renderAll();
-    });
-
-    document.getElementById('moveUp').addEventListener('click', () => moveActive(0, -moveIncrement));
-    document.getElementById('moveDown').addEventListener('click', () => moveActive(0, moveIncrement));
-    document.getElementById('moveLeft').addEventListener('click', () => moveActive(-moveIncrement, 0));
-    document.getElementById('moveRight').addEventListener('click', () => moveActive(moveIncrement, 0));
-
-    document.getElementById('downloadPng').addEventListener('click', () => {
-      canvas.discardActiveObject();
-      canvas.renderAll();
-      const dataURL = canvas.toDataURL({ format: 'png', quality: 1, multiplier: 2 });
-      const a = document.createElement('a');
-      a.href = dataURL;
-      a.download = 'bindrune.png';
-      a.click();
-    });
-
-    document.getElementById('resetCanvas').addEventListener('click', resetCanvasAndState);
-    document.getElementById('applySuggestion').addEventListener('click', fillRecommended);
-    document.getElementById('fillRecommended').addEventListener('click', fillRecommended);
-    document.getElementById('clearSuggestion').addEventListener('click', clearSlots);
-    document.getElementById('clearAllSlots').addEventListener('click', clearSlots);
-
-    intentionSelect.addEventListener('change', () => {
-      applyIntentionText();
+      initIntentionSelect();
+      createSlotSelectors();
       renderSuggestions();
-      updateSummary();
-    });
-
-    supportSelect.addEventListener('change', () => {
+      renderRuneLibrary();
       applyIntentionText();
       updateSummary();
+      applySupportTheme();
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
     });
-
-    document.addEventListener('keydown', (event) => {
-      const obj = getActive();
-      if (!obj) return;
-      switch (event.key) {
-        case 'ArrowUp': event.preventDefault(); moveActive(0, -moveIncrement); break;
-        case 'ArrowDown': event.preventDefault(); moveActive(0, moveIncrement); break;
-        case 'ArrowLeft': event.preventDefault(); moveActive(-moveIncrement, 0); break;
-        case 'ArrowRight': event.preventDefault(); moveActive(moveIncrement, 0); break;
-      }
-    });
-
-    initIntentionSelect();
-    createSlotSelectors();
-    resizeCanvas();
-    renderSuggestions();
-    applyIntentionText();
-    updateSummary();
-    window.addEventListener('resize', resizeCanvas);
   </script>
 </body>
 </html>
