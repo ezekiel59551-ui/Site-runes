@@ -452,7 +452,7 @@
       <aside class="stack">
         <section class="panel">
           <h2>Référence complète</h2>
-          <div class="subtle" style="margin-bottom:10px;">Ouvre le grimoire pour consulter toutes les runes du Futhark ancien avec leur son, leur ætt, leurs sens, usages et leur lore.</div>
+          <div class="subtle" style="margin-bottom:10px;">Ouvre le grimoire pour consulter toutes les runes du Futhark ancien avec leur son, leur ætt, leurs significations, usages et descriptions.</div>
           <button id="toggleRuneLibrary" class="btn-accent">Ouvrir le grimoire des 24 runes</button>
         </section>
 
@@ -560,7 +560,7 @@
         <button id="closeRuneLibrary" class="btn-soft" style="width:auto; min-width:120px;">Fermer</button>
       </div>
       <div class="library-content">
-        <div class="subtle" style="margin-bottom:14px;">Référence de ton univers runique : significations, usages et lore pratique pour composer les bindrunes.</div>
+        <div class="subtle" style="margin-bottom:14px;">Référence de ton univers runique : significations, usages et descriptions pratiques pour composer les bindrunes.</div>
         <div class="library-grid" id="libraryGrid"></div>
       </div>
     </div>
@@ -574,72 +574,72 @@
           char: 'ᚠ',
           sound: 'f',
           aett: 1,
-          meanings: 'bétail, abondance, richesse, prospérité, responsabilité face aux ressources',
-          usage: 'attirer la prospérité, travailler l’abondance, rappeler les limites de la cupidité',
-          lore: 'Rune liée au bétail, symbole de richesse vivante. Elle parle d’abondance mais aussi de responsabilité et de maîtrise des ressources.'
+          meanings: 'Bétail',
+          usage: 'abondance, richesse, prospérité, partage des ressources',
+          lore: 'Fehu symbolise l’abondance et la richesse sous la forme du bétail, ainsi que le contrôle de la nature que cela implique. Cette richesse doit être partagée pour être prospère, sans quoi elle suscitera cupidité et envie.'
         },
         {
           name: 'Uruz',
           char: 'ᚢ',
           sound: 'ou / u',
           aett: 1,
-          meanings: 'aurochs, force vitale, endurance, puissance du corps',
-          usage: 'revitalisation, renforcement du corps, soutien immunitaire, guérison physique',
-          lore: 'Associée à l’aurochs, elle soutient la force brute, l’endurance et la capacité du corps à se relever.'
+          meanings: 'L’Aurochs',
+          usage: 'force vitale, endurance, revitalisation, renforcement du corps',
+          lore: 'Symbolisant la force vitale et l’endurance, Uruz aide à revitaliser le corps et à renforcer le système immunitaire.'
         },
         {
           name: 'Thurisaz',
           char: 'ᚦ',
           sound: 'th',
           aett: 1,
-          meanings: 'épine, défense, force de Thor, puissance de protection',
-          usage: 'repousser les menaces, dissiper les obstacles, défense active',
-          lore: 'Rune associée au marteau de Thor. Elle agit comme une force puissante de défense et de rupture face au danger.'
+          meanings: 'Épine',
+          usage: 'protection, défense, repousser les menaces, dissiper les obstacles',
+          lore: 'Associée au marteau de Thor, cette rune invoque une force puissante pour repousser les menaces et dissiper les obstacles.'
         },
         {
           name: 'Ansuz',
           char: 'ᚨ',
           sound: 'a',
           aett: 1,
-          meanings: 'dieu, parole, expression, communication, signe',
-          usage: 'clarifier un message, mieux interpréter les signes, renforcer la parole juste',
-          lore: 'Rune de la parole inspirée, des messages subtils et de la sagesse dans l’interprétation.'
+          meanings: 'Dieu',
+          usage: 'parole, expression, communication, clarté, sagesse',
+          lore: 'Ansuz symbolise le pouvoir de la parole et de l’expression. Elle invite à être aux enseignements qui se présentent, et à communiquer avec clarté et sagesse.'
         },
         {
           name: 'Raidho',
           char: 'ᚱ',
           sound: 'r',
           aett: 1,
-          meanings: 'roue, voyage, mouvement, rythme, ordre cosmique',
-          usage: 'voyage physique ou spirituel, déplacement, cycles, évolution juste',
-          lore: 'Elle représente le voyage, le rythme des choses et l’alignement avec les cycles naturels.'
+          meanings: 'Roue',
+          usage: 'voyage, mouvement, rythme, ordre cosmique, cycles naturels',
+          lore: 'Raidho est liée au voyage, au mouvement et au rythme. Elle représente le voyage physique ou spirituel, ainsi que l’ordre cosmique et les cycles naturels.'
         },
         {
           name: 'Kenaz',
           char: 'ᚲ',
           sound: 'k',
           aett: 1,
-          meanings: 'flambeau, connaissance, révélation, créativité, feu intérieur',
-          usage: 'apprentissage, illumination, dissiper l’ignorance, éveiller un talent',
-          lore: 'Rune du flambeau et du feu intérieur. Elle révèle, éclaire et brûle les ténèbres de l’ignorance.'
+          meanings: 'Flambeau',
+          usage: 'connaissance, révélation, créativité, lumière intérieure',
+          lore: 'Kenaz est la rune de la connaissance, de la révélation et de la créativité. Elle est souvent associée à la torche ou au feu, symbolisant la lumière qui dissipe les les ténèbres de l’ignorance.'
         },
         {
           name: 'Gebo',
           char: 'ᚷ',
           sound: 'g',
           aett: 1,
-          meanings: 'cadeau, échange, partage, équilibre entre donner et recevoir',
-          usage: 'alliances, dons matériels ou spirituels, harmoniser les échanges',
-          lore: 'Rune du don juste. Elle rappelle que tout échange doit garder un équilibre.'
+          meanings: 'Le cadeau',
+          usage: 'don, échange, partenariat, équilibre entre donner et recevoir',
+          lore: 'Gebo symbolise le don, l’échange et le partenariat. Elle représente le cadeau, qu’il soit matériel ou spirituel, et souligne l’importance de l’équilibre donner et recevoir.'
         },
         {
           name: 'Wunjo',
           char: 'ᚹ',
           sound: 'w / v',
           aett: 1,
-          meanings: 'joie, bonheur, harmonie, satisfaction',
-          usage: 'ramener l’harmonie, soutenir les réalisations, nourrir la joie partagée',
-          lore: 'Rune des moments heureux, de l’accomplissement et de la paix intérieure ou collective.'
+          meanings: 'Joie',
+          usage: 'bonheur, harmonie, satisfaction, réalisations, bonheur partagé',
+          lore: 'Symbolise la joie, le bonheur et l’harmonie. Elle est le signe des réalisations, de la satisfaction et des moments de bonheur partagé.'
         },
 
         {
@@ -647,72 +647,72 @@
           char: 'ᚺ',
           sound: 'h',
           aett: 2,
-          meanings: 'grêle, chaos, bouleversement, crise transformatrice',
-          usage: 'accepter une rupture nécessaire, traverser une crise, provoquer une transformation',
-          lore: 'Force destructrice naturelle. Elle annonce les bouleversements inattendus qui obligent au changement.'
+          meanings: 'Grêle',
+          usage: 'bouleversements, crises, changement, transformation profonde',
+          lore: 'Hagalaz représente la grêle, symbolisant les forces naturelles destructrices et les bouleversements inattendus. Cette rune évoque les crises nécessaires pour provoquer des changements et des transformations profondes.'
         },
         {
           name: 'Nauthiz',
           char: 'ᚾ',
           sound: 'n',
           aett: 2,
-          meanings: 'nécessité, contrainte, épreuve, manque',
-          usage: 'tenir dans l’adversité, travailler la résilience, comprendre une limitation',
-          lore: 'Rune des besoins, des tensions et des épreuves qui forgent la croissance personnelle.'
+          meanings: 'Nécessité',
+          usage: 'contrainte, épreuves, limitation, croissance personnelle, résilience',
+          lore: 'Nauthiz incarne la contrainte et la nécessité. Elle reflète les épreuves et les limitations qui, bien que difficiles, encouragent la croissance personnelle et la résilience face aux défis.'
         },
         {
           name: 'Isa',
           char: 'ᛁ',
           sound: 'i',
           aett: 2,
-          meanings: 'glace, immobilité, stagnation, patience',
-          usage: 'mettre en pause, figer un excès, réfléchir, suspendre une action',
-          lore: 'Rune du gel et de la suspension. Elle invite à l’arrêt, à la patience et parfois à l’inaction consciente.'
+          meanings: 'Glace',
+          usage: 'immobilité, gel, stagnation, patience, réflexion',
+          lore: 'Isa symbolise la glace, représentant l’immobilité, le gel et la stagnation. Cette rune invite à la patience et à la réflexion, suggérant que parfois, l’inaction est la meilleure approche.'
         },
         {
           name: 'Jera',
           char: 'ᛃ',
           sound: 'j / y',
           aett: 2,
-          meanings: 'année, récolte, cycle, récompense',
-          usage: 'attendre la juste saison, récolter le fruit d’un effort, comprendre les cycles',
-          lore: 'Rune de la récolte et du temps juste. Elle rappelle que toute chose mûrit selon son propre rythme.'
+          meanings: 'Année, récolte',
+          usage: 'cycles, récolte, récompense, juste moment',
+          lore: 'Jera est associée au cycle des saisons et à la récolte. Elle symbolise les récompenses obtenues grâce aux efforts passés et rappelle que chaque chose arrive en son temps.'
         },
         {
           name: 'Eihwaz',
           char: 'ᛇ',
           sound: 'ei / y',
           aett: 2,
-          meanings: 'if, défense, persévérance, transformation, continuité',
-          usage: 'protection profonde, endurance, passage difficile, renaissance',
-          lore: 'Associée à l’if, rune de résistance, de passage et de continuité entre les mondes.'
+          meanings: 'If',
+          usage: 'transformation, continuité, persévérance, protection, passage entre les mondes',
+          lore: 'Représente l’arbre d’if, symbole de la mort et de la renaissance. Cette rune évoque la transformation, la continuité et la connexion entre les mondes.'
         },
         {
           name: 'Perthro',
           char: 'ᛈ',
           sound: 'p',
           aett: 2,
-          meanings: 'coupe, destin, mystère, hasard, secret',
-          usage: 'révéler un secret, accueillir l’inattendu, travailler avec le destin',
-          lore: 'Rune du mystère, du hasard et des vérités cachées qui surgissent au bon moment.'
+          meanings: 'Coupe, destin',
+          usage: 'mystère, destin, secrets cachés, opportunités inattendues',
+          lore: 'Perthro est liée au mystère et au destin. Elle suggère les secrets cachés, les opportunités inattendues et le jeu des forces du hasard dans la vie.'
         },
         {
           name: 'Algiz',
           char: 'ᛉ',
           sound: 'z / ʀ',
           aett: 2,
-          meanings: 'protection, élan, barrière, vigilance, intuition face au danger',
-          usage: 'former un bouclier, se protéger, sécuriser un lieu, sentir une menace',
-          lore: 'Rune de protection par excellence, dressée comme des bois d’élan face au danger.'
+          meanings: 'Protection, élan',
+          usage: 'protection, défense, bouclier, connexion énergétique, intuition face au danger',
+          lore: 'Algiz symbolise la protection et la défense. Représentant l’élan avec ses bois levés, cette rune est un bouclier contre les dangers et une connexion avec les énergies divines.'
         },
         {
           name: 'Sowilo',
           char: 'ᛋ',
           sound: 's',
           aett: 2,
-          meanings: 'soleil, lumière, succès, victoire, clarté',
-          usage: 'guider, illuminer, dissiper les ténèbres, renforcer la réussite',
-          lore: 'Rune solaire de lumière, de guidance et de victoire sur l’obscurité.'
+          meanings: 'Soleil',
+          usage: 'énergie solaire, victoire, clarté, succès, guidance',
+          lore: 'Sowilo incarne l’énergie solaire, la victoire et la clarté. Elle apporte lumière, succès et guidance, dissipant les ténèbres et les doutes.'
         },
 
         {
@@ -720,107 +720,107 @@
           char: 'ᛏ',
           sound: 't',
           aett: 3,
-          meanings: 'lance de Tyr, honneur, justice, combat loyal',
-          usage: 'agir avec droiture, défendre une cause juste, soutenir une décision claire',
-          lore: 'Rune de la justice et du combat mené avec honneur. Elle soutient ce qui est défendu avec justesse.'
+          meanings: 'Dieu Tyr',
+          usage: 'justice, courage, sacrifice, honneur, leadership',
+          lore: 'Tiwaz est dédiée au dieu Tyr, symbole de justice, de courage et de sacrifice. Cette rune représente l’honneur, le leadership et la détermination à défendre ce qui est juste.'
         },
         {
           name: 'Berkano',
           char: 'ᛒ',
           sound: 'b',
           aett: 3,
-          meanings: 'bouleau, croissance, fertilité, guérison émotionnelle',
-          usage: 'guérison, nouveau départ, apaisement émotionnel, protection du mental',
-          lore: 'Rune du bouleau et de la croissance. Elle soigne, apaise et soutient le renouveau.'
+          meanings: 'Bouleau',
+          usage: 'croissance, fertilité, famille, nouveaux départs, guérison',
+          lore: 'Berkano est associée au bouleau, arbre de la renaissance et de la fertilité. Elle symbolise la croissance, la famille et les nouveaux départs, favorisant la guérison et la prospérité.'
         },
         {
           name: 'Ehwaz',
           char: 'ᛖ',
           sound: 'e',
           aett: 3,
-          meanings: 'cheval, partenariat, progression, déplacement',
-          usage: 'collaboration, voyage, mouvement harmonieux, progrès partagé',
-          lore: 'Rune du cheval et de l’avancée conjointe. Elle soutient les alliances et les déplacements.'
+          meanings: 'Cheval',
+          usage: 'confiance, partenariat, mouvement harmonieux, progrès, coopération',
+          lore: 'Ehwaz représente le cheval, emblème de la confiance mutuelle et du partenariat. Cette rune évoque le mouvement harmonieux, le progrès et la coopération entre individus.'
         },
         {
           name: 'Mannaz',
           char: 'ᛗ',
           sound: 'm',
           aett: 3,
-          meanings: 'homme, intelligence collective, conscience, entraide',
-          usage: 'mémoire, soutien du groupe, compréhension de soi, coopération',
-          lore: 'Rune de l’esprit humain, de l’entraide et de l’intelligence partagée.'
+          meanings: 'Homme, humanité',
+          usage: 'conscience de soi, relations sociales, collaboration, bien commun',
+          lore: 'Mannaz incarne l’humanité et le soi. Elle souligne l’importance de la conscience de soi, des relations sociales et de la collaboration pour le bien commun.'
         },
         {
           name: 'Laguz',
           char: 'ᛚ',
           sound: 'l',
           aett: 3,
-          meanings: 'eau, flux, intuition, purification, émotions',
-          usage: 'faire circuler l’énergie, éliminer des blocages, purifier, suivre l’intuition',
-          lore: 'Rune de l’eau et du flux. Elle lave, relie, adoucit et remet le mouvement là où tout est figé.'
+          meanings: 'Eau',
+          usage: 'intuition, émotions, flux de l’énergie vitale, inconscient',
+          lore: 'Laguz est liée à l’eau, source de vie et symbole de l’inconscient. Cette rune représente l’intuition, les émotions et le flux constant de l’énergie vitale.'
         },
         {
           name: 'Ingwaz',
           char: 'ᛜ',
           sound: 'ng',
           aett: 3,
-          meanings: 'graine, potentiel, gestation, maturation',
-          usage: 'laisser mûrir un projet, protéger une idée en croissance, intériorité',
-          lore: 'Rune de la graine et du potentiel contenu. Ce qui n’est pas encore visible y grandit.'
+          meanings: 'Dieu Ing',
+          usage: 'fertilité, paix, abondance, potentiel latent, réalisations, plénitude',
+          lore: 'Ingwaz est associée au dieu ing, représentant la fertilité, la paix et l’abondance. Elle symbolise le potentiel latent, les réalisations et la plénitude.'
         },
         {
           name: 'Dagaz',
           char: 'ᛞ',
           sound: 'd',
           aett: 3,
-          meanings: 'aube, révélation, transition positive, illumination',
-          usage: 'accueillir un changement, comprendre un tournant, sortir d’une obscurité',
-          lore: 'Rune de l’aube et du basculement lumineux. Elle accompagne les passages décisifs.'
+          meanings: 'Jour',
+          usage: 'aube, transformation, éveil, nouveaux commencements, prospérité',
+          lore: 'Dagaz signifie "jour" et symbolise l’aube, la transformation et l’éveil. Cette rune annonce de nouveaux commencements, la prospérité et la réalisation des objectifs.'
         },
         {
           name: 'Othala',
           char: 'ᛟ',
           sound: 'o',
           aett: 3,
-          meanings: 'héritage, famille, racines, mémoire ancestrale',
-          usage: 'travail sur la lignée, protection du foyer, enracinement, retour aux origines',
-          lore: 'Rune des racines, de l’héritage et des terres intérieures ou familiales.'
+          meanings: 'Héritage, patrimoine',
+          usage: 'racines, traditions, héritage ancestral, identité culturelle',
+          lore: 'Othala représente l’héritage ancestral, les possessions familiales et les traditions. Elle souligne l’importance des racines, de l’identité culturelle et de la transmission du savoir.'
         }
       ];
 
       const INTENTIONS = {
         'Protection': {
           runes: ['Algiz', 'Thurisaz', 'Eihwaz', 'Tiwaz'],
-          logic: 'Protection forte : Algiz forme le bouclier, Thurisaz repousse l’attaque, Eihwaz tient dans l’épreuve, Tiwaz donne la droiture et la tenue.'
+          logic: 'Algiz protège, Thurisaz repousse, Eihwaz défend et persévère, Tiwaz apporte la droiture et le courage.'
         },
         'Guérison': {
           runes: ['Uruz', 'Berkano', 'Laguz', 'Sowilo'],
-          logic: 'Guérison complète : Uruz redonne la force vitale, Berkano soigne et régénère, Laguz remet le flux, Sowilo éclaire et vitalise.'
+          logic: 'Uruz revitalise le corps, Berkano soutient la guérison et le renouveau, Laguz remet le flux en mouvement, Sowilo apporte lumière et clarté.'
         },
         'Prospérité': {
           runes: ['Fehu', 'Jera', 'Gebo', 'Othala'],
-          logic: 'Prospérité enracinée : Fehu attire l’abondance, Jera apporte la récolte, Gebo équilibre les échanges, Othala stabilise par les racines et l’héritage.'
+          logic: 'Fehu attire l’abondance, Jera apporte la récolte au bon moment, Gebo équilibre l’échange, Othala ancre cela dans l’héritage.'
         },
         'Voyage': {
           runes: ['Raidho', 'Ehwaz', 'Algiz', 'Ansuz'],
-          logic: 'Voyage guidé : Raidho met le mouvement en route, Ehwaz accompagne le déplacement, Algiz protège, Ansuz aide à lire les signes du chemin.'
+          logic: 'Raidho met le voyage en mouvement, Ehwaz soutient le déplacement harmonieux, Algiz protège le trajet, Ansuz aide à lire les signes.'
         },
         'Mémoire': {
           runes: ['Mannaz', 'Ansuz', 'Kenaz', 'Isa'],
-          logic: 'Mémoire et lecture intérieure : Mannaz structure l’esprit, Ansuz ouvre à la compréhension, Kenaz éclaire, Isa fige l’attention.'
-        },
-        'Transformation': {
-          runes: ['Hagalaz', 'Nauthiz', 'Eihwaz', 'Dagaz'],
-          logic: 'Transformation profonde : Hagalaz provoque la rupture, Nauthiz force l’apprentissage, Eihwaz traverse l’épreuve, Dagaz ouvre le renouveau.'
+          logic: 'Mannaz structure l’esprit, Ansuz clarifie les messages, Kenaz éclaire la compréhension, Isa stabilise l’attention.'
         },
         'Joie & harmonie': {
           runes: ['Wunjo', 'Gebo', 'Berkano', 'Sowilo'],
-          logic: 'Harmonie douce : Wunjo apporte la joie, Gebo l’équilibre relationnel, Berkano soigne l’émotionnel, Sowilo rayonne.'
+          logic: 'Wunjo apporte la joie, Gebo l’équilibre relationnel, Berkano adoucit et régénère, Sowilo éclaire l’ensemble.'
         },
-        'Divination': {
-          runes: ['Ansuz', 'Perthro', 'Laguz', 'Kenaz'],
-          logic: 'Lecture symbolique : Ansuz transmet le message, Perthro ouvre le mystère, Laguz fluidifie l’intuition, Kenaz révèle.'
+        'Transformation': {
+          runes: ['Hagalaz', 'Nauthiz', 'Eihwaz', 'Dagaz'],
+          logic: 'Hagalaz provoque le bouleversement, Nauthiz impose l’épreuve nécessaire, Eihwaz accompagne la transformation, Dagaz ouvre le renouveau.'
+        },
+        'Destin & mystère': {
+          runes: ['Perthro', 'Ansuz', 'Laguz', 'Kenaz'],
+          logic: 'Perthro ouvre le mystère, Ansuz transmet les signes, Laguz guide par l’intuition, Kenaz révèle ce qui était caché.'
         }
       };
 
@@ -939,7 +939,7 @@
           {
             title: 'Ætt de Tyr',
             aett: 3,
-            intro: 'Troisième ætt : justice, guérison, partenariat, conscience, intuition, gestation, aube et héritage.',
+            intro: 'Troisième ætt : justice, guérison, partenariat, conscience, intuition, fertilité, aube et héritage.',
             className: 'aett-tyr'
           }
         ];
@@ -964,15 +964,31 @@
                   <h3>${rune.name}</h3>
                   <div class="library-meta">Ætt ${rune.aett} · son ${rune.sound}</div>
                   <div class="library-desc">
-                    <strong>Sens :</strong> ${rune.meanings}<br>
+                    <strong>Signification :</strong> ${rune.meanings}<br>
                     <strong>Usages :</strong> ${rune.usage}<br>
-                    <strong>Lore :</strong> ${rune.lore}
+                    <strong>Description :</strong> ${rune.lore}
                   </div>
                 </div>
               `;
               libraryGrid.appendChild(card);
             });
         });
+
+        const sectionProt = document.createElement('div');
+        sectionProt.className = 'library-section aett-heimdall';
+        sectionProt.innerHTML = `
+          <div class="library-section-title">Runes de protection</div>
+          <div class="library-section-intro">${RUNE_GROUPS.protection.join(' · ')}</div>
+        `;
+        libraryGrid.appendChild(sectionProt);
+
+        const sectionHeal = document.createElement('div');
+        sectionHeal.className = 'library-section aett-tyr';
+        sectionHeal.innerHTML = `
+          <div class="library-section-title">Runes de guérison</div>
+          <div class="library-section-intro">${RUNE_GROUPS.guerison.join(' · ')}</div>
+        `;
+        libraryGrid.appendChild(sectionHeal);
       }
 
       function renderSuggestions() {
@@ -991,7 +1007,7 @@
               <h3>${rune.name}</h3>
               <div class="rune-meta">Ætt ${rune.aett} · son ${rune.sound}</div>
               <div class="rune-desc">
-                <strong>Sens :</strong> ${rune.meanings}<br>
+                <strong>Signification :</strong> ${rune.meanings}<br>
                 <strong>Usages :</strong> ${rune.usage}
               </div>
             </div>
@@ -1123,7 +1139,7 @@
 
         selectedRunesText.innerHTML = selected.map(r => `${r.name} ${r.char}`).join(' · ');
         meaningText.innerHTML = selected.map(r =>
-          `<strong>${r.name}</strong> : ${r.meanings}<br><em>${r.lore}</em>`
+          `<strong>${r.name}</strong> — <strong>${r.meanings}</strong><br><em>${r.lore}</em>`
         ).join('<br><br>');
       }
 
