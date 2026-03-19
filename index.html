@@ -621,6 +621,12 @@
             </div>
             <div class="subtle" id="selectedRunesText">Aucune rune sélectionnée.</div>
             <div class="subtle" id="meaningText">Choisis une intention ou ajoute une rune pour voir les explications.</div>
+
+            <div class="divider"></div>
+
+            <div>
+              <button class="btn-accent" id="downloadScribeSheet">Télécharger la fiche</button>
+            </div>
           </div>
         </section>
       </aside>
@@ -717,6 +723,237 @@
       const moveIncrement = 2;
 
       const getRuneByName = (name) => RUNES.find(r => r.name === name);
+
+      function escapeHtml(str = '') {
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      function getSelectedRunesDetailed() {
+        return slotValues.map(getRuneByName).filter(Boolean);
+      }
+
+      function buildScribeSheetHTML() {
+        const intention = intentionSelect.value || '—';
+        const support = supportSelect.value || '—';
+        const selected = getSelectedRunesDetailed();
+        const today = new Date().toLocaleDateString('fr-FR');
+
+        const comboText = selected.length
+          ? selected.map(r => `${r.name} ${r.char}`).join(' · ')
+          : 'Aucune rune sélectionnée';
+
+        const runeBlocks = selected.length
+          ? selected.map((r, i) => `
+              <section class="rune-block">
+                <div class="rune-head">
+                  <div class="rune-char">${escapeHtml(r.char)}</div>
+                  <div>
+                    <h3>${i + 1}. ${escapeHtml(r.name)}</h3>
+                    <div class="meta">Ætt ${escapeHtml(r.aett)} · son ${escapeHtml(r.sound)}</div>
+                  </div>
+                </div>
+                <p><strong>Signification :</strong> ${escapeHtml(r.meanings)}</p>
+                <p><strong>Usages :</strong> ${escapeHtml(r.usage)}</p>
+                <p><strong>Description :</strong> ${escapeHtml(r.lore)}</p>
+              </section>
+            `).join('')
+          : `<p class="empty">Aucune rune n’a été choisie pour cette fiche.</p>`;
+
+        const intentionLogic =
+          intention && INTENTIONS[intention]
+            ? `<p><strong>Lecture du combo :</strong> ${escapeHtml(INTENTIONS[intention].logic)}</p>`
+            : '';
+
+        return `<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Fiche du scribe — Bindrune</title>
+  <style>
+    body {
+      font-family: Georgia, "Times New Roman", serif;
+      margin: 0;
+      padding: 32px;
+      background: #f2e4bd;
+      color: #2f2014;
+      line-height: 1.6;
+    }
+
+    .sheet {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #fff7e4;
+      border: 2px solid #8a6a3e;
+      border-radius: 18px;
+      padding: 28px;
+      box-shadow: 0 10px 30px rgba(42,24,10,.15);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      color: #6e4518;
+      font-size: 2rem;
+    }
+
+    .subtitle {
+      margin-bottom: 22px;
+      color: #7a5a3b;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-size: .85rem;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .meta-card {
+      border: 1px solid #b28d5c;
+      border-radius: 12px;
+      padding: 12px;
+      background: #f7edd4;
+    }
+
+    .meta-card strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #6e4518;
+      font-size: .82rem;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    .section-title {
+      margin: 26px 0 12px;
+      color: #6e4518;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .combo-box {
+      border: 1px solid #b28d5c;
+      background: #f8efd8;
+      border-radius: 14px;
+      padding: 14px 16px;
+    }
+
+    .rune-block {
+      border: 1px solid #b28d5c;
+      border-radius: 14px;
+      padding: 16px;
+      background: #fcf5e3;
+      margin-bottom: 14px;
+    }
+
+    .rune-head {
+      display: grid;
+      grid-template-columns: 64px 1fr;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .rune-char {
+      width: 64px;
+      height: 64px;
+      display: grid;
+      place-items: center;
+      border: 1px solid #b28d5c;
+      border-radius: 14px;
+      background: #ecd6a6;
+      font-size: 2rem;
+      color: #5b3918;
+    }
+
+    .rune-head h3 {
+      margin: 0 0 4px;
+      color: #5b3918;
+    }
+
+    .meta {
+      color: #7a5a3b;
+      font-style: italic;
+      font-size: .92rem;
+    }
+
+    .empty {
+      color: #6f5437;
+      font-style: italic;
+    }
+
+    .footer-note {
+      margin-top: 28px;
+      font-size: .92rem;
+      color: #6f5437;
+      border-top: 1px solid #c7ab79;
+      padding-top: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <h1>Fiche du scribe</h1>
+    <div class="subtitle">Atelier de composition runique</div>
+
+    <div class="meta-grid">
+      <div class="meta-card">
+        <strong>Date</strong>
+        <div>${escapeHtml(today)}</div>
+      </div>
+      <div class="meta-card">
+        <strong>Intention</strong>
+        <div>${escapeHtml(intention)}</div>
+      </div>
+      <div class="meta-card">
+        <strong>Support</strong>
+        <div>${escapeHtml(support)}</div>
+      </div>
+    </div>
+
+    <div class="section-title">Composition choisie</div>
+    <div class="combo-box">
+      <p><strong>Runes sélectionnées :</strong> ${escapeHtml(comboText)}</p>
+      ${intentionLogic}
+    </div>
+
+    <div class="section-title">Détail des runes</div>
+    ${runeBlocks}
+
+    <div class="footer-note">
+      Cette fiche a été générée depuis le Créateur de Bindrunes.
+    </div>
+  </div>
+</body>
+</html>`;
+      }
+
+      function downloadScribeSheet() {
+        const html = buildScribeSheetHTML();
+        const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+
+        const intention = (intentionSelect.value || 'scribe')
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+
+        a.download = `fiche-du-scribe-${intention || 'bindrune'}.html`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
 
       function applySupportTheme() {
         const support = supportSelect.value || '';
@@ -1122,6 +1359,8 @@
         a.download = 'bindrune.png';
         a.click();
       });
+
+      document.getElementById('downloadScribeSheet').addEventListener('click', downloadScribeSheet);
 
       document.getElementById('resetCanvas').addEventListener('click', resetCanvasAndState);
       document.getElementById('applySuggestion').addEventListener('click', fillRecommended);
